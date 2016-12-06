@@ -34,7 +34,7 @@ if ( ! class_exists( 'PBSElementHtml' ) ) {
 				return;
 			}
 
-			include 'page_builder_sandwich/templates/frame-html-editor.php';
+			include  inc . 'page_builder_sandwich/templates/frame-html-editor.php';
 		}
 
 

@@ -654,7 +654,7 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
 				return;
 			}
-			include 'page_builder_sandwich/templates/frame-icon-picker.php';
+			include inc . 'page_builder_sandwich/templates/frame-icon-picker.php';
 		}
 
 

@@ -21,7 +21,7 @@ SKU: PBS
 define('NBD', plugin_dir_path( __FILE__ ));
 
 define('inc', NBD . 'inc/');
-define('class', inc . 'class/');
+define('classes', inc . 'class/');
 
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.

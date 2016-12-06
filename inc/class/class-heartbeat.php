@@ -469,8 +469,8 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 			global $pbs_url_for_templates;
 			$pbs_url_for_templates = trailingslashit( plugins_url( 'page_builder_sandwich', __FILE__ ) );
 
-			include 'page_builder_sandwich/templates/heartbeat-locked.php';
-			include 'page_builder_sandwich/templates/heartbeat-takeover.php';
+			include  inc . 'page_builder_sandwich/templates/heartbeat-locked.php';
+			include  inc . 'page_builder_sandwich/templates/heartbeat-takeover.php';
 		}
 	}
 }

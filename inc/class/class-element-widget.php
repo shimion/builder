@@ -163,7 +163,7 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 				return;
 			}
 
-			include 'page_builder_sandwich/templates/frame-widget-picker.php';
+			include  inc . 'page_builder_sandwich/templates/frame-widget-picker.php';
 		}
 
 

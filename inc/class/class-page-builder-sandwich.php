@@ -197,71 +197,71 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 			}
 
 			global $pbs_url_for_templates;
-			$pbs_url_for_templates = trailingslashit( plugins_url( 'page_builder_sandwich', __FILE__ ) );
+			$pbs_url_for_templates = trailingslashit( plugins_url( 'page_builder_sandwich', dirname(__FILE__) ) );
 
-			include 'page_builder_sandwich/templates/option-border.php';
-			include 'page_builder_sandwich/templates/option-text.php';
-			include 'page_builder_sandwich/templates/option-textarea.php';
-			include 'page_builder_sandwich/templates/option-color.php';
-			include 'page_builder_sandwich/templates/option-margins-and-paddings.php';
-			include 'page_builder_sandwich/templates/option-select.php';
-			include 'page_builder_sandwich/templates/option-checkbox.php';
-			include 'page_builder_sandwich/templates/option-button2.php';
-			include 'page_builder_sandwich/templates/option-shortcode-generic.php';
-			include 'page_builder_sandwich/templates/option-image.php';
-			include 'page_builder_sandwich/templates/option-number.php';
-			include 'page_builder_sandwich/templates/frame-admin.php';
-			include 'page_builder_sandwich/templates/frame-shortcode-picker.php';
-			include 'page_builder_sandwich/templates/frame-predesigned-picker.php';
+			include inc . '/page_builder_sandwich/templates/option-border.php';
+			include inc . '/page_builder_sandwich/templates/option-text.php';
+			include inc . '/page_builder_sandwich/templates/option-textarea.php';
+			include inc . '/page_builder_sandwich/templates/option-color.php';
+			include inc . '/page_builder_sandwich/templates/option-margins-and-paddings.php';
+			include inc . '/page_builder_sandwich/templates/option-select.php';
+			include inc . '/page_builder_sandwich/templates/option-checkbox.php';
+			include inc . '/page_builder_sandwich/templates/option-button2.php';
+			include inc . '/page_builder_sandwich/templates/option-shortcode-generic.php';
+			include inc . '/page_builder_sandwich/templates/option-image.php';
+			include inc . '/page_builder_sandwich/templates/option-number.php';
+			include inc . '/page_builder_sandwich/templates/frame-admin.php';
+			include inc . '/page_builder_sandwich/templates/frame-shortcode-picker.php';
+			include inc . '/page_builder_sandwich/templates/frame-predesigned-picker.php';
 
 			global $pbs_fs;
 			if ( ! PBS_IS_LITE && $pbs_fs->can_use_premium_code() ) {
-				include 'page_builder_sandwich/templates/option-multicheck.php';
-				include 'page_builder_sandwich/templates/option-iframe.php';
+				include inc . '/page_builder_sandwich/templates/option-multicheck.php';
+				include inc . '/page_builder_sandwich/templates/option-iframe.php';
 
-				include 'page_builder_sandwich/templates/design-element-page-headings.php';
-				include 'page_builder_sandwich/templates/design-element-page-headings-2.php';
-				include 'page_builder_sandwich/templates/design-element-page-headings-3.php';
-				include 'page_builder_sandwich/templates/design-element-page-headings-4.php';
-				include 'page_builder_sandwich/templates/design-element-page-headings-5.php';
-				include 'page_builder_sandwich/templates/design-element-call-to-actions.php';
-				include 'page_builder_sandwich/templates/design-element-call-to-actions-2.php';
-				include 'page_builder_sandwich/templates/design-element-call-to-actions-3.php';
-				include 'page_builder_sandwich/templates/design-element-call-to-actions-4.php';
-				include 'page_builder_sandwich/templates/design-element-call-to-actions-5.php';
-				include 'page_builder_sandwich/templates/design-element-call-to-actions-6.php';
-				include 'page_builder_sandwich/templates/design-element-testimonials.php';
-				include 'page_builder_sandwich/templates/design-element-testimonials-2.php';
-				include 'page_builder_sandwich/templates/design-element-testimonials-3.php';
-				include 'page_builder_sandwich/templates/design-element-testimonials-4.php';
-				include 'page_builder_sandwich/templates/design-element-testimonials-5.php';
-				include 'page_builder_sandwich/templates/design-element-testimonials-6.php';
-				include 'page_builder_sandwich/templates/design-element-pricing-tables.php';
-				include 'page_builder_sandwich/templates/design-element-large-features.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-2.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-3.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-4.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-5.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-6.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-7.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-8.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-9.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-10.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-11.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-12.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-13.php';
-				include 'page_builder_sandwich/templates/design-element-large-features-14.php';
-				include 'page_builder_sandwich/templates/design-element-team-members.php';
-				include 'page_builder_sandwich/templates/design-element-team-members-2.php';
-				include 'page_builder_sandwich/templates/design-element-team-members-3.php';
-				include 'page_builder_sandwich/templates/design-element-gallery-1.php';
-				include 'page_builder_sandwich/templates/design-element-gallery-2.php';
-				include 'page_builder_sandwich/templates/design-element-gallery-3.php';
-				include 'page_builder_sandwich/templates/design-element-gallery-4.php';
-				include 'page_builder_sandwich/templates/design-element-gallery-5.php';
+				include inc . '/page_builder_sandwich/templates/design-element-page-headings.php';
+				include inc . '/page_builder_sandwich/templates/design-element-page-headings-2.php';
+				include inc . '/page_builder_sandwich/templates/design-element-page-headings-3.php';
+				include inc . '/page_builder_sandwich/templates/design-element-page-headings-4.php';
+				include inc . '/page_builder_sandwich/templates/design-element-page-headings-5.php';
+				include inc . '/page_builder_sandwich/templates/design-element-call-to-actions.php';
+				include inc . '/page_builder_sandwich/templates/design-element-call-to-actions-2.php';
+				include inc . '/page_builder_sandwich/templates/design-element-call-to-actions-3.php';
+				include inc . '/page_builder_sandwich/templates/design-element-call-to-actions-4.php';
+				include inc . '/page_builder_sandwich/templates/design-element-call-to-actions-5.php';
+				include inc . '/page_builder_sandwich/templates/design-element-call-to-actions-6.php';
+				include inc . '/page_builder_sandwich/templates/design-element-testimonials.php';
+				include inc . '/page_builder_sandwich/templates/design-element-testimonials-2.php';
+				include inc . '/page_builder_sandwich/templates/design-element-testimonials-3.php';
+				include inc . '/page_builder_sandwich/templates/design-element-testimonials-4.php';
+				include inc . '/page_builder_sandwich/templates/design-element-testimonials-5.php';
+				include inc . '/page_builder_sandwich/templates/design-element-testimonials-6.php';
+				include inc . '/page_builder_sandwich/templates/design-element-pricing-tables.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-2.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-3.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-4.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-5.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-6.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-7.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-8.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-9.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-10.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-11.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-12.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-13.php';
+				include inc . '/page_builder_sandwich/templates/design-element-large-features-14.php';
+				include inc . '/page_builder_sandwich/templates/design-element-team-members.php';
+				include inc . '/page_builder_sandwich/templates/design-element-team-members-2.php';
+				include inc . '/page_builder_sandwich/templates/design-element-team-members-3.php';
+				include inc . '/page_builder_sandwich/templates/design-element-gallery-1.php';
+				include inc . '/page_builder_sandwich/templates/design-element-gallery-2.php';
+				include inc . '/page_builder_sandwich/templates/design-element-gallery-3.php';
+				include inc . '/page_builder_sandwich/templates/design-element-gallery-4.php';
+				include inc . '/page_builder_sandwich/templates/design-element-gallery-5.php';
 
 			} else {
-				include 'page_builder_sandwich/templates/learn-premium-modal.php';
+				include inc . '/page_builder_sandwich/templates/learn-premium-modal.php';
 			}
 		}
 
@@ -462,7 +462,7 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 		 */
 		public function remove_oembed_markers( $content ) {
 			if ( ! class_exists( 'simple_html_dom' ) ) {
-				require_once( 'page_builder_sandwich/inc/simple_html_dom.php' );
+				require_once( inc . '/page_builder_sandwich/inc/simple_html_dom.php' );
 			}
 
 			// Remove all data-shortcode and replace it with the decoded shortcode. Do this from last to first to preserve nesting.
@@ -495,7 +495,7 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 		public function escape_pretext_shortcodes( $content ) {
 
 			if ( ! class_exists( 'simple_html_dom' ) ) {
-				require_once( 'page_builder_sandwich/inc/simple_html_dom.php' );
+				require_once( inc.'page_builder_sandwich/inc/simple_html_dom.php' );
 			}
 
 			// Remove all data-shortcode and replace it with the decoded shortcode. Do this from last to first to preserve nesting.
@@ -703,7 +703,7 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 		 */
 		public function remove_shortcode_markers( $content ) {
 			if ( ! class_exists( 'simple_html_dom' ) ) {
-				require_once( 'page_builder_sandwich/inc/simple_html_dom.php' );
+				require_once( inc . '/page_builder_sandwich/inc/simple_html_dom.php' );
 			}
 
 			// Remove all data-shortcode and replace it with the decoded shortcode. Do this from last to first to preserve nesting.
@@ -859,7 +859,7 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 		public function enqueue_admin_scripts() {
 
 			// Admin styles.
-			wp_enqueue_style( __CLASS__ . '-admin', plugins_url( 'page_builder_sandwich/css/admin.min.css', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_style( __CLASS__ . '-admin', plugins_url( 'page_builder_sandwich/css/admin.min.css', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 
 			$js_dir = defined( 'WP_DEBUG' ) && WP_DEBUG ? 'dev' : 'min';
 			$js_suffix = defined( 'WP_DEBUG' ) && WP_DEBUG ? '' : '-min';
@@ -871,7 +871,7 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 			$localize_params = apply_filters( 'pbs_localize_admin_scripts', $localize_params );
 
 			// Admin javascript.
-			wp_enqueue_script( __CLASS__ . '-admin', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/admin' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_script( __CLASS__ . '-admin', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/admin' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 			wp_localize_script( __CLASS__ . '-admin', 'pbsParams', $localize_params );
 		}
 
@@ -884,7 +884,7 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 		 * @return void
 		 */
 		public function add_editor_styles() {
-		    add_editor_style( plugins_url( 'page_builder_sandwich/css/style.min.css', __FILE__ ) );
+		    add_editor_style( plugins_url( 'page_builder_sandwich/css/style.min.css', dirname(__FILE__) ) );
 		}
 
 
@@ -899,9 +899,9 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 			$js_dir = defined( 'WP_DEBUG' ) && WP_DEBUG ? 'dev' : 'min';
 			$js_suffix = defined( 'WP_DEBUG' ) && WP_DEBUG ? '' : '-min';
 
-			wp_enqueue_style( __CLASS__ , plugins_url( 'page_builder_sandwich/css/style.min.css', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_style( __CLASS__ , plugins_url( 'page_builder_sandwich/css/style.min.css', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 
-			wp_enqueue_script( __CLASS__, plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/frontend' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_script( __CLASS__, plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/frontend' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 		}
 
 
@@ -953,22 +953,22 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 
 			// Various icons used in PBS.
 			wp_enqueue_style( 'dashicons' );
-			wp_enqueue_style( 'genericons', plugins_url( 'page_builder_sandwich/css/inc/genericons/genericons.min.css', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_style( 'genericons', plugins_url( 'page_builder_sandwich/css/inc/genericons/genericons.min.css', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 			wp_enqueue_media();
 
 			// Enqueue wp.hooks script since it's not yet in Core.
-			wp_enqueue_script( 'event-manager', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/inc/event-manager/event-manager' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_script( 'event-manager', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/inc/event-manager/event-manager' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 
 			// Content Tools.
-			wp_enqueue_style( 'content-tools', plugins_url( 'page_builder_sandwich/css/inc/content-tools/content-tools.min.css', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
-			wp_enqueue_script( 'content-tools', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/inc/content-tools/content-tools' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_style( 'content-tools', plugins_url( 'page_builder_sandwich/css/inc/content-tools/content-tools.min.css', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_script( 'content-tools', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/inc/content-tools/content-tools' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 
 			// Main PBS editor script.
-			wp_enqueue_style( __CLASS__ . '-builder' , plugins_url( 'page_builder_sandwich/css/editor.min.css', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
-			wp_enqueue_script( __CLASS__ . '-builder', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/script' . $js_suffix . '.js', __FILE__ ), array( 'content-tools', 'backbone', 'wp-util', 'media-editor', 'iris' ), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_style( __CLASS__ . '-builder' , plugins_url( 'page_builder_sandwich/css/editor.min.css', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_script( __CLASS__ . '-builder', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/script' . $js_suffix . '.js', dirname(__FILE__) ), array( 'content-tools', 'backbone', 'wp-util', 'media-editor', 'iris' ), VERSION_PAGE_BUILDER_SANDWICH );
 
 			// Display error notices with PBS.
-			wp_enqueue_script( __CLASS__ . '-error-notice', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/script-error-notice' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH );
+			wp_enqueue_script( __CLASS__ . '-error-notice', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/script-error-notice' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH );
 
 			$error_notice_params = array();
 			$error_notice_params = apply_filters( 'pbs_error_notice_localize_scripts', $error_notice_params );
@@ -1002,10 +1002,10 @@ if ( ! class_exists( 'PageBuilderSandwich' ) ) {
 				'nonce' => wp_create_nonce( 'pbs' ),
 				'shortcodes' => self::get_all_shortcodes(),
 				'shortcodes_to_hide' => apply_filters( 'pbs_shortcodes_to_hide_in_picker', array() ),
-				'default_icon' => plugins_url( 'page_builder_sandwich/images/shortcode-icon.png', __FILE__ ),
+				'default_icon' => plugins_url( 'page_builder_sandwich/images/shortcode-icon.png', dirname(__FILE__) ),
 				'additional_shortcodes' => apply_filters( 'pbs_shortcodes', array() ),
 				'is_admin_bar_showing' => is_admin_bar_showing(),
-				'plugin_url' => trailingslashit( plugins_url( '/', __FILE__ ) ),
+				'plugin_url' => trailingslashit( plugins_url( '/', dirname(__FILE__) ) ),
 				'post_status' => ! empty( $GLOBALS['post']->ID ) ? get_post_status( $GLOBALS['post']->ID ) : '',
 				'dummy_image_id' => $dummy_image_id,
 				'buy_url' => admin_url( '/admin.php?page=page-builder-sandwich-pricing' ),
