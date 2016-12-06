@@ -3,9 +3,9 @@
  * Dummy vc_map function.
  * This file is only used if Visual Composer isn't available.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  *
- * @see PBSShortcodeMapper3rdParty::_vc_map
+ * @see nhbShortcodeMapper3rdParty::_vc_map
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
@@ -20,6 +20,6 @@ if ( ! function_exists( 'vc_map' ) ) {
 	 */
 	function vc_map( $attributes ) {
 		// Gather all attributes here and put them in our own mapper.
-		PBSShortcodeMapper3rdParty::_vc_map( $attributes );
+		nhbShortcodeMapper3rdParty::_vc_map( $attributes );
 	}
 }

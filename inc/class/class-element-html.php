@@ -2,18 +2,18 @@
 /**
  * Html Element class.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSElementHtml' ) ) {
+if ( ! class_exists( 'nhbElementHtml' ) ) {
 
 	/**
 	 * This is where all the html element functionality happens.
 	 */
-	class PBSElementHtml {
+	class nhbElementHtml {
 
 		/**
 		 * Hook into WordPress.
@@ -30,11 +30,11 @@ if ( ! class_exists( 'PBSElementHtml' ) ) {
 		 * @since 2.12
 		 */
 		public function add_html_frame_template() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
 
-			include  inc . 'page_builder_sandwich/templates/frame-html-editor.php';
+			include  inc . 'no_hassle_builder/templates/frame-html-editor.php';
 		}
 
 
@@ -71,4 +71,4 @@ if ( ! class_exists( 'PBSElementHtml' ) ) {
 	}
 }
 
-new PBSElementHtml();
+new nhbElementHtml();

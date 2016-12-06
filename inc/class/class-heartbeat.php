@@ -5,18 +5,18 @@
  *
  * @since 3.1
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSHeartbeat' ) ) {
+if ( ! class_exists( 'nhbHeartbeat' ) ) {
 
 	/**
 	 * This is where all the login checks happen.
 	 */
-	class PBSHeartbeat {
+	class nhbHeartbeat {
 
 		/**
 		 * Hook into WordPress.
@@ -33,36 +33,36 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 			// Checks for nonce validity & refreshes the nonce,
 			// Checks post locking & activates lock checking if possible.
 			// This is called when the editor starts.
-			add_action( 'wp_ajax_pbs_heartbeat_check', array( $this, 'heartbeat_check' ) );
+			add_action( 'wp_ajax_nhb_heartbeat_check', array( $this, 'heartbeat_check' ) );
 
 			// Release a post lock.
 			// This is called when cancelling the editor.
-			add_action( 'wp_ajax_pbs_remove_post_lock', array( $this, 'remove_post_lock' ) );
+			add_action( 'wp_ajax_nhb_remove_post_lock', array( $this, 'remove_post_lock' ) );
 
 			// When saving a post, release the post lock.
-			add_action( 'pbs_saved_content', array( $this, 'remove_post_lock_on_save' ) );
+			add_action( 'nhb_saved_content', array( $this, 'remove_post_lock_on_save' ) );
 
 			// Take over a post lock.
 			// This is called when the takeover dialog is used.
-			add_action( 'wp_ajax_pbs_override_post_lock', array( $this, 'override_post_lock' ) );
+			add_action( 'wp_ajax_nhb_override_post_lock', array( $this, 'override_post_lock' ) );
 
 			// Autosave the post content.
 			// This is called manually when a takeover was performed by another user.
-			add_action( 'wp_ajax_pbs_autosave', array( $this, 'heartbeat_autosave' ) );
+			add_action( 'wp_ajax_nhb_autosave', array( $this, 'heartbeat_autosave' ) );
 
 			// Adds the autosave interval value.
-			add_filter( 'pbs_localize_scripts', array( $this, 'add_heartbeat_params' ) );
+			add_filter( 'nhb_localize_scripts', array( $this, 'add_heartbeat_params' ) );
 
 			// Includes the heartbeat API.
-			add_action( 'pbs_enqueue_scripts', array( $this, 'enqueue_heartbeat_api' ) );
+			add_action( 'nhb_enqueue_scripts', array( $this, 'enqueue_heartbeat_api' ) );
 
-			// Heartbeat call to refresh the PBS nonce if invalid.
+			// Heartbeat call to refresh the nhb nonce if invalid.
 			// Called every heartbeat.
-			add_filter( 'heartbeat_received', array( $this, 'refresh_pbs_nonce' ), 11, 2 );
+			add_filter( 'heartbeat_received', array( $this, 'refresh_nhb_nonce' ), 11, 2 );
 
-			// Refreshes the PBS nonce along with the refresh of other nonces.
+			// Refreshes the nhb nonce along with the refresh of other nonces.
 			// Called automatically by the heartbeat API.
-			add_filter( 'wp_refresh_nonces', array( $this, 'auth_refresh_pbs_nonce' ), 11,  3 );
+			add_filter( 'wp_refresh_nonces', array( $this, 'auth_refresh_nhb_nonce' ), 11,  3 );
 
 			// Heartbeat call to regularly lock the post.
 			// We need to regularly do this because the post lock expires after a while.
@@ -82,7 +82,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 
 
 		/**
-		 * Add the JS params we need for the PBS heartbeat to work.
+		 * Add the JS params we need for the nhb heartbeat to work.
 		 *
 		 * @since 3.1
 		 *
@@ -138,8 +138,8 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var okay.
 
 			// If the nonce is old or invalid, create a new one.
-			if ( wp_verify_nonce( $nonce, 'pbs' ) !== 1 ) {
-				$ret['nonce'] = wp_create_nonce( 'pbs' );
+			if ( wp_verify_nonce( $nonce, 'nhb' ) !== 1 ) {
+				$ret['nonce'] = wp_create_nonce( 'nhb' );
 			}
 
 			/**
@@ -199,16 +199,16 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 		 *
 		 * @return array The heartbeat response
 		 */
-		public function refresh_pbs_nonce( $response, $data ) {
+		public function refresh_nhb_nonce( $response, $data ) {
 
-			// Nonce for the entire PBS.
-			if ( ! empty( $data['pbs_nonce'] ) ) {
+			// Nonce for the entire nhb.
+			if ( ! empty( $data['nhb_nonce'] ) ) {
 
-				$nonce = sanitize_key( $data['pbs_nonce'] );
+				$nonce = sanitize_key( $data['nhb_nonce'] );
 
 				// If the nonce is old or invalid, create a new one.
-				if ( wp_verify_nonce( $nonce, 'pbs' ) !== 1 ) {
-					$response['pbs_nonce_new'] = wp_create_nonce( 'pbs' );
+				if ( wp_verify_nonce( $nonce, 'nhb' ) !== 1 ) {
+					$response['nhb_nonce_new'] = wp_create_nonce( 'nhb' );
 				}
 			}
 
@@ -237,11 +237,11 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 		 *
 		 * @return array The heartbeat response
 		 */
-		function auth_refresh_pbs_nonce( $response, $data, $screen_id ) {
+		function auth_refresh_nhb_nonce( $response, $data, $screen_id ) {
 			if ( array_key_exists( 'wp-refresh-post-nonces', $response ) ) {
 
-				// Main PBS nonce.
-				$response['wp-refresh-post-nonces']['pbs_nonce_new'] = wp_create_nonce( 'pbs' );
+				// Main nhb nonce.
+				$response['wp-refresh-post-nonces']['nhb_nonce_new'] = wp_create_nonce( 'nhb' );
 
 				// The Media Manager nonce.
 				$response['wp-refresh-post-nonces']['media_manager_editor_nonce_new'] = wp_create_nonce( 'media-send-to-editor' );
@@ -298,7 +298,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var okay.
 			$post_id = absint( $_POST['post_id'] ); // Input var okay.
 
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 
@@ -332,7 +332,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var okay.
 			$post_id = absint( $_POST['post_id'] ); // Input var okay.
 
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 
@@ -358,7 +358,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 
 				// Clean up the content, this is the same cleaning we do during saving.
 				$content = sanitize_post_field( 'post_content', $content, $post_id, 'db' );
-				$content = apply_filters( 'pbs_save_content', $content, $post_id );
+				$content = apply_filters( 'nhb_save_content', $content, $post_id );
 
 				// Form the dummy autosave data.
 				$post = get_post( $post_id, ARRAY_A );
@@ -400,7 +400,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 			}
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var okay.
 
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 
@@ -409,7 +409,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 
 			// Clean up the content, this is the same cleaning we do during saving.
 			$content = sanitize_post_field( 'post_content', $content, $post_id, 'db' );
-			$content = apply_filters( 'pbs_save_content', $content, $post_id );
+			$content = apply_filters( 'nhb_save_content', $content, $post_id );
 
 			// Form the dummy autosave data.
 			$post = get_post( $post_id, ARRAY_A );
@@ -444,7 +444,7 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 		 * @since 3.1
 		 */
 		public function add_login_form() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
 
@@ -462,17 +462,17 @@ if ( ! class_exists( 'PBSHeartbeat' ) ) {
 		 * @since 3.1
 		 */
 		public function add_takeover_form() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
 
-			global $pbs_url_for_templates;
-			$pbs_url_for_templates = trailingslashit( plugins_url( 'page_builder_sandwich', __FILE__ ) );
+			global $nhb_url_for_templates;
+			$nhb_url_for_templates = trailingslashit( plugins_url( 'NO_HASSLE_BUILDER', __FILE__ ) );
 
-			include  inc . 'page_builder_sandwich/templates/heartbeat-locked.php';
-			include  inc . 'page_builder_sandwich/templates/heartbeat-takeover.php';
+			include  inc . 'no_hassle_builder/templates/heartbeat-locked.php';
+			include  inc . 'no_hassle_builder/templates/heartbeat-takeover.php';
 		}
 	}
 }
 
-new PBSHeartbeat();
+new nhbHeartbeat();

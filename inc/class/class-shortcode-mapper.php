@@ -6,30 +6,30 @@
  * 1. Listen to plugin changes to trigger a shortcode mapping check.
  * 2. SC Mapping check against shortcodes.pagebuildersandwich.com REST API.
  * 3. Update the local DB collection of SC mappings.
- * 4. Manual triggering of SC mapping update via the PBS editor.
+ * 4. Manual triggering of SC mapping update via the nhb editor.
  * 5. Integrate with SC inspector area for SC settings.
  *
  * @since 2.18
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
+if ( ! class_exists( 'nhbShortcodeMapper' ) ) {
 
 	/**
 	 * This is where all the shortcode mapper functionality happens.
 	 */
-	class PBSShortcodeMapper {
+	class nhbShortcodeMapper {
 
 		/**
 		 * The URL of the Shortcode Mapper API Endpoint.
 		 *
 		 * @var string
 		 */
-		const SHORTCODE_MAPPING_URL = 'http://shortcodes.pagebuildersandwich.com/wp-json/pbs/v1/shortcode_maps/';
+		const SHORTCODE_MAPPING_URL = 'http://shortcodes.pagebuildersandwich.com/wp-json/nhb/v1/shortcode_maps/';
 
 		/**
 		 * The interval when to update the shortcode mapping.
@@ -53,19 +53,19 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 			add_action( 'after_switch_theme', array( $this, 'clear_transient_to_update' ), 999 );
 
 			// Add the mapped shortcodes to the editor.
-			add_filter( 'pbs_localize_scripts', array( $this, 'add_shortcode_mappings' ) );
+			add_filter( 'nhb_localize_scripts', array( $this, 'add_shortcode_mappings' ) );
 
 			// We need all the post types for some shortcode options.
-			add_filter( 'pbs_localize_scripts', array( $this, 'add_post_types' ) );
+			add_filter( 'nhb_localize_scripts', array( $this, 'add_post_types' ) );
 
 			// Used by the image/images attribute for getting image URLs from image IDs.
-			add_action( 'wp_ajax_pbs_get_attachment_urls', array( $this, 'get_attachment_urls' ) );
+			add_action( 'wp_ajax_nhb_get_attachment_urls', array( $this, 'get_attachment_urls' ) );
 
-			// Handle manual updates from the sc picker modal. Used by _pbs-frame-shortcode-picker.js.
-			add_action( 'wp_ajax_pbs_update_shortcode_mappings', array( $this, 'ajax_pbs_update_shortcode_mappings' ) );
+			// Handle manual updates from the sc picker modal. Used by _nhb-frame-shortcode-picker.js.
+			add_action( 'wp_ajax_nhb_update_shortcode_mappings', array( $this, 'ajax_nhb_update_shortcode_mappings' ) );
 
-			if ( pbs_is_dev() ) {
-				add_shortcode( 'pbs_sc_map_test', array( $this, 'pbs_sc_map_test' ) );
+			if ( nhb_is_dev() ) {
+				add_shortcode( 'nhb_sc_map_test', array( $this, 'nhb_sc_map_test' ) );
 				add_action( 'init', array( $this, 'add_sample_mapping' ) );
 			}
 		}
@@ -79,7 +79,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 * @return void
 		 */
 		public function clear_transient_to_update() {
-			delete_transient( 'pbs_scmapper_daily_check' );
+			delete_transient( 'nhb_scmapper_daily_check' );
 		}
 
 
@@ -92,9 +92,9 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 * @return void
 		 */
 		public function sometimes_update_mappings() {
-			if ( is_user_logged_in() && false === get_transient( 'pbs_scmapper_daily_check' ) ) {
+			if ( is_user_logged_in() && false === get_transient( 'nhb_scmapper_daily_check' ) ) {
 				$this->update_shortcode_mappings();
-				set_transient( 'pbs_scmapper_daily_check', 1, self::OCCASSIONAL_UPDATE_INTERVAL );
+				set_transient( 'nhb_scmapper_daily_check', 1, self::OCCASSIONAL_UPDATE_INTERVAL );
 			}
 		}
 
@@ -106,12 +106,12 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 *
 		 * @return void
 		 */
-		public function ajax_pbs_update_shortcode_mappings() {
+		public function ajax_nhb_update_shortcode_mappings() {
 			if ( empty( $_POST['nonce'] ) ) { // Input var: okay.
 				die();
 			}
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var: okay.
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 
@@ -165,13 +165,13 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 						self::save_mappings( $mappings );
 
 						if ( ! empty( $mappings['_total'] ) ) {
-							update_option( 'pbs_shortcode_mappings_total', $mappings['_total'] );
+							update_option( 'nhb_shortcode_mappings_total', $mappings['_total'] );
 						}
 						if ( ! empty( $mappings['_mapped_plugins'] ) ) {
-							update_option( 'pbs_shortcode_mapped_plugins_total', $mappings['_mapped_plugins'] );
+							update_option( 'nhb_shortcode_mapped_plugins_total', $mappings['_mapped_plugins'] );
 						}
 						if ( ! empty( $mappings['_mapped_shortcodes'] ) ) {
-							update_option( 'pbs_shortcode_mapped_shortcodes_total', $mappings['_mapped_shortcodes'] );
+							update_option( 'nhb_shortcode_mapped_shortcodes_total', $mappings['_mapped_shortcodes'] );
 						}
 					}
 				}
@@ -187,7 +187,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 * @return array The saved shortcode mappings.
 		 */
 		public static function get_mappings() {
-			$mappings = get_option( 'pbs_shortcode_mappings' );
+			$mappings = get_option( 'nhb_shortcode_mappings' );
 			if ( is_serialized( $mappings ) ) {
 				$mappings = unserialize( $mappings );
 			}
@@ -206,7 +206,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 * @param array $mappings The shortcode mappings array.
 		 */
 		public static function save_mappings( $mappings ) {
-			update_option( 'pbs_shortcode_mappings', serialize( $mappings ) );
+			update_option( 'nhb_shortcode_mappings', serialize( $mappings ) );
 		}
 
 
@@ -221,7 +221,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 * @return array Shortcodes and their hashes.
 		 */
 		private function get_all_shortcodes_and_hashes() {
-			$shortcodes = PageBuilderSandwich::get_all_shortcodes();
+			$shortcodes = NoHassleBuilder::get_all_shortcodes();
 			$mappings = self::get_mappings();
 
 			$mapped_shortcodes_and_hashes = array();
@@ -357,7 +357,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 			if ( empty( $_POST['nonce'] ) ) { // Input var: okay.
 				die();
 			}
-			if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'pbs' ) ) { // Input var: okay.
+			if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'nhb' ) ) { // Input var: okay.
 				die();
 			}
 			if ( empty( $_POST['image_ids'] ) ) { // Input var: okay.
@@ -385,7 +385,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 
 
 		/**
-		 * Adds testing shortcode mapping for the pbs_sc_map_test shortcode.
+		 * Adds testing shortcode mapping for the nhb_sc_map_test shortcode.
 		 * Only used during development.
 		 *
 		 * @since 2.18
@@ -396,7 +396,7 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 			require_once( '_shortcode-mapper-tester.php' );
 
 			$mappings = self::get_mappings();
-			$mappings['pbs_sc_map_test'] = pbs_shortcode_mapper_test_data();
+			$mappings['nhb_sc_map_test'] = nhb_shortcode_mapper_test_data();
 			self::save_mappings( $mappings );
 		}
 
@@ -412,10 +412,10 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 		 *
 		 * @return string $atts dump.
 		 */
-		public function pbs_sc_map_test( $atts, $content = '' ) {
+		public function nhb_sc_map_test( $atts, $content = '' ) {
 
 			require_once( '_shortcode-mapper-tester.php' );
-			$settings = pbs_shortcode_mapper_test_data();
+			$settings = nhb_shortcode_mapper_test_data();
 
 			$ret = '<h3>' . esc_html( $settings['name'] ) . '<span style="font-size: .8em; display: block; font-style: italic; font-weight: normal !important;">' . esc_html( $settings['description'] ) . '</span></h3>';
 
@@ -440,4 +440,4 @@ if ( ! class_exists( 'PBSShortcodeMapper' ) ) {
 	}
 }
 
-new PBSShortcodeMapper();
+new nhbShortcodeMapper();

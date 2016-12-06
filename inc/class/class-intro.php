@@ -2,24 +2,24 @@
 /**
  * Introduction Tour for the frontend.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSIntro' ) ) {
+if ( ! class_exists( 'nhbIntro' ) ) {
 
 	/**
 	 * This is where all the intro functionality happens.
 	 */
-	class PBSIntro {
+	class nhbIntro {
 
 		/**
 		 * Hook into the frontend.
 		 */
 		function __construct() {
-			add_filter( 'pbs_localize_scripts', array( $this, 'localize_scripts' ) );
+			add_filter( 'nhb_localize_scripts', array( $this, 'localize_scripts' ) );
 		}
 
 		/**
@@ -30,12 +30,12 @@ if ( ! class_exists( 'PBSIntro' ) ) {
 		 * @return array The modified localization array.
 		 */
 		public function localize_scripts( $args ) {
-			$args['do_intro'] = get_option( 'pbs_first_load_intro_v3' ) === false;
+			$args['do_intro'] = get_option( 'nhb_first_load_intro_v3' ) === false;
 
-			update_option( 'pbs_first_load_intro_v3', 'done' );
+			update_option( 'nhb_first_load_intro_v3', 'done' );
 			return $args;
 		}
 	}
 }
 
-new PBSIntro();
+new nhbIntro();

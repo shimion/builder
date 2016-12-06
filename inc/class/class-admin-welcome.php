@@ -4,18 +4,18 @@
  *
  * @since 3.2
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSAdminWelcome' ) ) {
+if ( ! class_exists( 'nhbAdminWelcome' ) ) {
 
 	/**
 	 * This is where all the admin page creation happens.
 	 */
-	class PBSAdminWelcome {
+	class nhbAdminWelcome {
 
 		/**
 		 * Hook into WordPress.
@@ -27,25 +27,25 @@ if ( ! class_exists( 'PBSAdminWelcome' ) ) {
 
 
 		/**
-		 * Creates the PBS admin menu item.
+		 * Creates the nhb admin menu item.
 		 *
 		 * @since 3.2
 		 */
 		public function create_admin_menu() {
 			add_menu_page(
-				esc_html__( 'Page Builder Sandwich', PAGE_BUILDER_SANDWICH ), // Page title.
-				esc_html__( 'PBSandwich', PAGE_BUILDER_SANDWICH ), // Menu title.
+				esc_html__( 'No Hassle Builder', NO_HASSLE_BUILDER ), // Page title.
+				esc_html__( 'nhb', NO_HASSLE_BUILDER ), // Menu title.
 				'manage_options', // Permissions.
-				'page-builder-sandwich', // Slug.
+				'no-hassle-builder', // Slug.
 				array( $this, 'create_admin_page' ) // Page creation function.
 			);
 
 			add_submenu_page(
-				'page-builder-sandwich', // Parent slug.
-				esc_html__( 'Page Builder Sandwich', PAGE_BUILDER_SANDWICH ), // Page title.
-				esc_html__( 'Home', PAGE_BUILDER_SANDWICH ), // Menu title.
+				'no-hassle-builder', // Parent slug.
+				esc_html__( 'No Hassle Builder', NO_HASSLE_BUILDER ), // Page title.
+				esc_html__( 'Home', NO_HASSLE_BUILDER ), // Menu title.
 				'manage_options', // Permissions.
-				'page-builder-sandwich', // Slug.
+				'no-hassle-builder', // Slug.
 				array( $this, 'create_admin_page' ) // Page creation function.
 			);
 		}
@@ -59,14 +59,14 @@ if ( ! class_exists( 'PBSAdminWelcome' ) ) {
 		public function create_admin_page() {
 			?>
 			<div class="wrap about-wrap">
-				<img class="pbs-logo" src="<?php echo esc_url( plugins_url( 'page_builder_sandwich/images/pbs-logo.png', __FILE__ ) ) ?>"/>
-				<h1><?php esc_html_e( 'Welcome to Page Builder Sandwich', PAGE_BUILDER_SANDWICH ) ?> v<?php esc_html_e( VERSION_PAGE_BUILDER_SANDWICH ) ?></h1>
-				<p class="pbs-subheading"><?php esc_html_e( 'Creating Stunning Webpages Is Now as Easy as Making a Sandwich', PAGE_BUILDER_SANDWICH ) ?></p>
-				<p class="pbs-notice"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ) ?>"><?php esc_html_e( 'View Pages', PAGE_BUILDER_SANDWICH ) ?></a> <?php esc_html_e( 'To start, go to your list of pages and click on the "Edit with Page Builder Sandwich" link below each page entry.', PAGE_BUILDER_SANDWICH ) ?></p>
+				<img class="nhb-logo" src="<?php echo esc_url( plugins_url( 'no_hassle_builder/images/nhb-logo.png', __FILE__ ) ) ?>"/>
+				<h1><?php esc_html_e( 'Welcome to No Hassle Builder', NO_HASSLE_BUILDER ) ?> v<?php esc_html_e( VERSION_NO_HASSLE_BUILDER ) ?></h1>
+				<p class="nhb-subheading"><?php esc_html_e( 'Creating Stunning Webpages Is Now as Easy as Making a Sandwich', NO_HASSLE_BUILDER ) ?></p>
+				<p class="nhb-notice"><a class="button button-primary" href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ) ?>"><?php esc_html_e( 'View Pages', NO_HASSLE_BUILDER ) ?></a> <?php esc_html_e( 'To start, go to your list of pages and click on the "Edit with No Hassle Builder" link below each page entry.', NO_HASSLE_BUILDER ) ?></p>
 				<div class="welcome-panel">
-					<div class="pbs-whats-new-wrapper">
-						<h2><?php esc_html_e( "What's New", PAGE_BUILDER_SANDWICH ) ?></h2>
-						<div class="pbs-whats-new">
+					<div class="nhb-whats-new-wrapper">
+						<h2><?php esc_html_e( "What's New", NO_HASSLE_BUILDER ) ?></h2>
+						<div class="nhb-whats-new">
 							<div>
 								<h3>Edit Post Titles</h3>
 								<p>Now you can change page and post titles when editing. Just click on your title and type away.</p>
@@ -101,9 +101,9 @@ if ( ! class_exists( 'PBSAdminWelcome' ) ) {
 							</div>
 						</div>
 					</div>
-					<div class="pbs-tour-wrapper">
-						<h2><?php esc_html_e( 'Watch the Tour', PAGE_BUILDER_SANDWICH ) ?></h2>
-						<div class="pbs-tour">
+					<div class="nhb-tour-wrapper">
+						<h2><?php esc_html_e( 'Watch the Tour', NO_HASSLE_BUILDER ) ?></h2>
+						<div class="nhb-tour">
 							<iframe src="https://www.youtube.com/embed/dSU2l1Vhp50?rel=0&showinfo=0&autohide=1&controls=0" width="800" height="450" frameborder="0" allowfullscreen="1"></iframe>
 						</div>
 					</div>
@@ -121,12 +121,12 @@ if ( ! class_exists( 'PBSAdminWelcome' ) ) {
 		 * @param string $plugin The path to the plugin that was activated.
 		 */
 		public function redirect_to_welcome_page( $plugin ) {
-			if ( plugin_basename( PBS_FILE ) === $plugin ) {
-				wp_redirect( esc_url( admin_url( 'admin.php?page=page-builder-sandwich' ) ) );
+			if ( plugin_basename( nhb_FILE ) === $plugin ) {
+				wp_redirect( esc_url( admin_url( 'admin.php?page=no-hassle-builder' ) ) );
 				die();
 			}
 		}
 	}
 }
 
-new PBSAdminWelcome();
+new nhbAdminWelcome();

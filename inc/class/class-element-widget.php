@@ -2,18 +2,18 @@
 /**
  * Widget Element class.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSElementWidget' ) ) {
+if ( ! class_exists( 'nhbElementWidget' ) ) {
 
 	/**
 	 * This is where all the widget element functionality happens.
 	 */
-	class PBSElementWidget {
+	class nhbElementWidget {
 
 		/**
 		 * Holds the list of widgets available in WordPress.
@@ -27,9 +27,9 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 		 * Hook into WordPress.
 		 */
 		function __construct() {
-			add_filter( 'pbs_localize_scripts', array( $this, 'add_widget_list' ) );
+			add_filter( 'nhb_localize_scripts', array( $this, 'add_widget_list' ) );
 			add_action( 'wp_footer', array( $this, 'add_picker_frame_template' ) );
-			add_action( 'wp_ajax_pbs_get_widget_templates', array( $this, 'get_widget_templates' ) );
+			add_action( 'wp_ajax_nhb_get_widget_templates', array( $this, 'get_widget_templates' ) );
 
 			// When a menu has been added/changed/deleted, refresh the widgets
 			// so that widgets that use menus e.g. custom menu get updated.
@@ -41,7 +41,7 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 
 			// Tell JS to refresh our widget settings in the editor. This is used
 			// when the page redirected and we couldn't refresh it right away.
-			if ( get_transient( 'pbs_widget_force_update' ) ) {
+			if ( get_transient( 'nhb_widget_force_update' ) ) {
 				add_action( 'wp_footer', array( $this, 'refresh_widgets' ) );
 				add_action( 'admin_footer', array( $this, 'refresh_widgets' ) );
 			}
@@ -113,14 +113,14 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 		 *
 		 * @since 2.11.2
 		 *
-		 * @see _pbs-widget-templates.js
+		 * @see _nhb-widget-templates.js
 		 */
 		public function get_widget_templates() {
 			if ( empty( $_POST['nonce'] ) ) { // Input var okay.
 				die();
 			}
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var okay.
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 
@@ -140,7 +140,7 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 				$form = preg_replace( '/<script[^>]*>[\s\S]*?<\/script>/', '', $form );
 
 				?>
-				<script type="text/html" id="tmpl-pbs-widget-<?php echo esc_attr( $widget_slug ) ?>">
+				<script type="text/html" id="tmpl-nhb-widget-<?php echo esc_attr( $widget_slug ) ?>">
 					<?php
 					echo $form; // WPCS: XSS ok.
 					?>
@@ -159,17 +159,17 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 		 * @since 2.11
 		 */
 		public function add_picker_frame_template() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
 
-			include  inc . 'page_builder_sandwich/templates/frame-widget-picker.php';
+			include  inc . 'no_hassle_builder/templates/frame-widget-picker.php';
 		}
 
 
 		/**
 		 * Called when a menu (nav_menu) gets updated/created/deleted.
-		 * This prompts PBS to refresh the settings of widgets in the editor.
+		 * This prompts nhb to refresh the settings of widgets in the editor.
 		 *
 		 * @since 3.3
 		 *
@@ -177,9 +177,9 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 		 */
 		public function menu_was_updated( $menu_id ) {
 
-			// We set a transient here so that we can also prompt PBS when
+			// We set a transient here so that we can also prompt nhb when
 			// the the admin page is redirected.
-			set_transient( 'pbs_widget_force_update', '1', HOUR_IN_SECONDS );
+			set_transient( 'nhb_widget_force_update', '1', HOUR_IN_SECONDS );
 
 			add_action( 'wp_footer', array( $this, 'refresh_widgets' ) );
 			add_action( 'admin_footer', array( $this, 'refresh_widgets' ) );
@@ -192,17 +192,17 @@ if ( ! class_exists( 'PBSElementWidget' ) ) {
 		 * @since 3.3
 		 */
 		public function refresh_widgets() {
-			delete_transient( 'pbs_widget_force_update' );
+			delete_transient( 'nhb_widget_force_update' );
 			?>
 			<script>
-			localStorage.removeItem( 'pbs_get_widget_templates_hash' );
+			localStorage.removeItem( 'nhb_get_widget_templates_hash' );
 			</script>
 			<?php
 		}
 	}
 }
 
-new PBSElementWidget();
+new nhbElementWidget();
 
 
 /**
@@ -224,10 +224,10 @@ new PBSElementWidget();
  *
  * @return boolean True whether we handled the error ourselves, false otherwise.
  */
-function pbs_widget_catchable_error_handler( $errno, $errstr, $errfile, $errline ) {
+function nhb_widget_catchable_error_handler( $errno, $errstr, $errfile, $errline ) {
 	if ( E_RECOVERABLE_ERROR === $errno && stripos( $errstr, 'class-element-widget.php' ) ) {
 		throw new ErrorException( $errstr, $errno, 0, $errfile, $errline );
 	}
 	return false;
 }
-set_error_handler( 'pbs_widget_catchable_error_handler' );
+set_error_handler( 'nhb_widget_catchable_error_handler' );

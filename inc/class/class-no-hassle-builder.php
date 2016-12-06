@@ -1,0 +1,1093 @@
+<?php
+/**
+ * No Hassle Builder main functionality class
+ *
+ * @package No Hassle Builder
+ */
+
+if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
+}
+
+// Initializes plugin class.
+if ( ! class_exists( 'NoHassleBuilder' ) ) {
+
+	/**
+	 * This is where all the plugin's functionality happens.
+	 */
+	class NoHassleBuilder {
+
+		/**
+		 * Hook into WordPress.
+		 *
+		 * @return	void
+		 * @since	1.0
+		 */
+		function __construct() {
+
+			new nhbCompatibility();
+
+			/**
+			 * Necessary stuff to make content work for non-editors / logged out users.
+			 */
+
+			// These are the scripts which is needed by non-editors.
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
+
+			// Gathers all the ce-tags so we can include the different scripts needed (see previous line).
+			add_filter( 'the_content', array( $this, 'gather_ce_tags' ), 0 );
+			add_filter( 'the_content', array( $this, 'add_spec_style_tag' ), 9999999 );
+
+			// Allow all stuff in TinyMCE.
+			add_filter( 'tiny_mce_before_init', array( $this, 'tinymce_allow_divs' ), 20 );
+			add_filter( 'teeny_mce_before_init', array( $this, 'tinymce_allow_divs' ), 20 );
+
+			/**
+			 * Allow others to stop the loading of nhb when necessary, e.g. other builders, and stuff that can heavily conflict.
+			 */
+
+			if ( ! apply_filters( 'nhb_load_editor', true ) ) {
+				return;
+			}
+
+			/**
+			 * All stuff below are for the editor.
+			 */
+
+			// Our admin-side scripts & styles.
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+
+			// Enqueues scripts and styles specific for all parts of the plugin.
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_editor' ) );
+
+			// Apply different markers that we need for the builder to work properly in the frontend.
+			add_filter( 'the_content', array( $this, 'escape_pretext_shortcodes' ), 0 );
+			add_filter( 'the_content', array( $this, 'add_shortcode_markers' ), 0 );
+			add_filter( 'nhb_save_content', array( $this, 'remove_shortcode_markers' ) );
+			add_filter( 'the_content', array( $this, 'add_oembed_markers' ), 0 );
+			add_filter( 'nhb_save_content', array( $this, 'remove_oembed_markers' ) );
+			add_filter( 'the_content', array( $this, 'add_iframe_markers' ), 0 );
+
+			// Add the wrapper to detect the content area for the builder.
+			add_filter( 'the_content', array( $this, 'add_builder_wrapper' ), 9 );
+			add_filter( 'the_content', array( $this, 'add_builder_wrapper_fallback' ), 999999 );
+
+			// Important: We have to delay some filters so that our `add_builder_wrapper` works correctly.
+			$this->delay_the_content_filters();
+
+			// Saving handlers.
+			add_action( 'wp_ajax_gambit_builder_save_content', array( $this, 'save_content' ) );
+			add_filter( 'nhb_save_content', array( $this, 'cleanup_content' ), 999 );
+
+			// Other necessary scripts.
+			add_action( 'wp_footer', array( $this, 'add_builder_templates' ) );
+			add_action( 'wp_footer', array( $this, 'add_wplink_dependencies' ) );
+
+			// Add our admin bar button.
+			if ( ! is_admin() ) {
+				add_action( 'admin_bar_menu', array( $this, 'add_edit_admin_bar_button' ), 999 );
+			}
+
+			// Minimum styling to make the default content editor play nice with nhb's saved content.
+			add_action( 'admin_init', array( $this, 'add_editor_styles' ) );
+
+			new nhbRenderShortcode();
+		}
+
+
+		/**
+		 * We need to delay these filters because OTHER plugins & themes MAY append some stuff
+		 * in `the_content` filter which SHOULDN'T be editable in nhb. So the solution would be
+		 * to grab/wrap the content BEFORE priority 10. We do ours in priority 9.
+		 *
+		 * But we need wpautop to first run, but that's called at priority 10 - which is too late.
+		 * to fix this, we move wpautop to priority 8.
+		 */
+		public function delay_the_content_filters() {
+			remove_filter( 'the_content', 'wpautop' );
+			add_filter( 'the_content', 'wpautop', 8 );
+
+			// Since we moved wpautop to priority 8, it might conflict with others which need to run
+			// before wpautop, delay those also.
+			if ( ! empty( $GLOBALS['wp_embed'] ) ) {
+				remove_filter( 'the_content', array( $GLOBALS['wp_embed'], 'run_shortcode' ), 8 );
+				add_filter( 'the_content', array( $GLOBALS['wp_embed'], 'run_shortcode' ), 7 );
+				remove_filter( 'the_content', array( $GLOBALS['wp_embed'], 'autoembed' ), 8 );
+				add_filter( 'the_content', array( $GLOBALS['wp_embed'], 'autoembed' ), 7 );
+			}
+		}
+
+
+		/**
+		 * We are adding divs with attributes normally not allowed in TinyMCE. Allow our divs in TinyMCE.
+		 *
+		 * @since 2.9
+		 *
+		 * @param array $init TinyMCE init parameters.
+		 *
+		 * @return array The modified TinyMCE init parameters.
+		 */
+		public function tinymce_allow_divs( $init ) {
+			if ( ! empty( $init['extended_valid_elements'] ) ) {
+				$init['extended_valid_elements'] .= ',';
+			} else {
+				$init['extended_valid_elements'] = '';
+			}
+			$init['extended_valid_elements'] .= 'div[*]';
+		    return apply_filters( 'nhb_tinymce_allow_divs', $init );
+		}
+
+
+		/**
+		 * Checks whether the current user has editing privileges in the current
+		 * page/post/CPT.
+		 *
+		 * @since 2.0
+		 *
+		 * @return boolean Returns true if the current page is a post and if its editable.
+		 */
+		public static function is_editable_by_user() {
+
+			// Don't show in the customizer.
+			if ( is_customize_preview() ) {
+				return false;
+			}
+
+			// Don't show for non-single pages.
+			if ( ! is_single() && ! is_page() ) {
+				return false;
+			}
+
+			// Don't show if we are not in the main query.
+			if ( ! is_main_query() ) {
+				return false;
+			}
+
+			// Don't show if post data is not available.
+			if ( empty( $GLOBALS['post'] ) ) {
+				return false;
+			}
+
+			global $post;
+			$editable = false;
+			if ( is_single() ) {
+				if ( $post ) {
+					$editable = current_user_can( 'edit_post', $post->ID );
+				} else {
+					$editable = current_user_can( 'edit_posts' );
+				}
+			} else {
+				if ( $post ) {
+					$editable = current_user_can( 'edit_page', $post->ID );
+				} else {
+					$editable = current_user_can( 'edit_pages' );
+				}
+			}
+			return apply_filters( 'nhb_is_editable_by_user', $editable );
+		}
+
+
+		/**
+		 * Adds nhb required template files.
+		 *
+		 * @since 2.0
+		 */
+		public function add_builder_templates() {
+			if ( ! self::is_editable_by_user() ) {
+				return;
+			}
+
+			global $nhb_url_for_templates;
+			$nhb_url_for_templates = trailingslashit( plugins_url( 'NO_HASSLE_BUILDER', dirname(__FILE__) ) );
+
+			include inc . '/no_hassle_builder/templates/option-border.php';
+			include inc . '/no_hassle_builder/templates/option-text.php';
+			include inc . '/no_hassle_builder/templates/option-textarea.php';
+			include inc . '/no_hassle_builder/templates/option-color.php';
+			include inc . '/no_hassle_builder/templates/option-margins-and-paddings.php';
+			include inc . '/no_hassle_builder/templates/option-select.php';
+			include inc . '/no_hassle_builder/templates/option-checkbox.php';
+			include inc . '/no_hassle_builder/templates/option-button2.php';
+			include inc . '/no_hassle_builder/templates/option-shortcode-generic.php';
+			include inc . '/no_hassle_builder/templates/option-image.php';
+			include inc . '/no_hassle_builder/templates/option-number.php';
+			include inc . '/no_hassle_builder/templates/frame-admin.php';
+			include inc . '/no_hassle_builder/templates/frame-shortcode-picker.php';
+			include inc . '/no_hassle_builder/templates/frame-predesigned-picker.php';
+
+			global $nhb_fs;
+			if ( ! nhb_IS_LITE && $nhb_fs->can_use_premium_code() ) {
+				include inc . '/no_hassle_builder/templates/option-multicheck.php';
+				include inc . '/no_hassle_builder/templates/option-iframe.php';
+
+				include inc . '/no_hassle_builder/templates/design-element-page-headings.php';
+				include inc . '/no_hassle_builder/templates/design-element-page-headings-2.php';
+				include inc . '/no_hassle_builder/templates/design-element-page-headings-3.php';
+				include inc . '/no_hassle_builder/templates/design-element-page-headings-4.php';
+				include inc . '/no_hassle_builder/templates/design-element-page-headings-5.php';
+				include inc . '/no_hassle_builder/templates/design-element-call-to-actions.php';
+				include inc . '/no_hassle_builder/templates/design-element-call-to-actions-2.php';
+				include inc . '/no_hassle_builder/templates/design-element-call-to-actions-3.php';
+				include inc . '/no_hassle_builder/templates/design-element-call-to-actions-4.php';
+				include inc . '/no_hassle_builder/templates/design-element-call-to-actions-5.php';
+				include inc . '/no_hassle_builder/templates/design-element-call-to-actions-6.php';
+				include inc . '/no_hassle_builder/templates/design-element-testimonials.php';
+				include inc . '/no_hassle_builder/templates/design-element-testimonials-2.php';
+				include inc . '/no_hassle_builder/templates/design-element-testimonials-3.php';
+				include inc . '/no_hassle_builder/templates/design-element-testimonials-4.php';
+				include inc . '/no_hassle_builder/templates/design-element-testimonials-5.php';
+				include inc . '/no_hassle_builder/templates/design-element-testimonials-6.php';
+				include inc . '/no_hassle_builder/templates/design-element-pricing-tables.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-2.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-3.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-4.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-5.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-6.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-7.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-8.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-9.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-10.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-11.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-12.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-13.php';
+				include inc . '/no_hassle_builder/templates/design-element-large-features-14.php';
+				include inc . '/no_hassle_builder/templates/design-element-team-members.php';
+				include inc . '/no_hassle_builder/templates/design-element-team-members-2.php';
+				include inc . '/no_hassle_builder/templates/design-element-team-members-3.php';
+				include inc . '/no_hassle_builder/templates/design-element-gallery-1.php';
+				include inc . '/no_hassle_builder/templates/design-element-gallery-2.php';
+				include inc . '/no_hassle_builder/templates/design-element-gallery-3.php';
+				include inc . '/no_hassle_builder/templates/design-element-gallery-4.php';
+				include inc . '/no_hassle_builder/templates/design-element-gallery-5.php';
+
+			} else {
+				include inc . '/no_hassle_builder/templates/learn-premium-modal.php';
+			}
+		}
+
+
+		/**
+		 * Adds the necessary script and markup for the link dialog modal.
+		 * This modal is used to create/edit text links.
+		 *
+		 * @since 2.1
+		 */
+		public function add_wplink_dependencies() {
+			if ( self::is_editable_by_user() ) {
+
+				// Render the link dialog html.
+				require_once ABSPATH . WPINC . '/class-wp-editor.php';
+				_WP_Editors::wp_link_dialog();
+
+				// We need this dummy textarea to make the link modal work.
+				echo '<textarea id="dummy-wplink-textarea"></textarea>';
+
+				// The variable adminajax isn't normally defined in the frontend and is needed by wpLink.
+				echo '<script>var ajaxurl = "' . esc_url( admin_url( 'admin-ajax.php' ) ) . '";</script>';
+			}
+		}
+
+
+		/**
+		 * Adds nhb buttons to the admin bar in the frontend. These buttons are used
+		 * directly by our editor.
+		 *
+		 * @since 2.0
+		 *
+		 * @param object $wp_admin_bar The admin bar object.
+		 *
+		 * @return void
+		 */
+		public function add_edit_admin_bar_button( $wp_admin_bar ) {
+			if ( ! self::is_editable_by_user() ) {
+				return;
+			}
+			$args = array(
+				'id'    => 'gambit_builder_edit',
+				'title' => '<span class="ab-icon"></span>' . __( 'No Hassle Builder', NO_HASSLE_BUILDER ),
+				'href'  => '#',
+				'meta'  => array( 'class' => 'nhb-adminbar-icon' ),
+			);
+			$wp_admin_bar->add_node( $args );
+
+			// Make the label for the save button.
+			$save_label = __( 'Save and Update', NO_HASSLE_BUILDER );
+			$post_status = 'publish';
+			if ( ! empty( $GLOBALS['post']->ID ) ) {
+				$post_status = get_post_status( $GLOBALS['post']->ID );
+				if ( 'draft' === $post_status || 'auto-draft' === $post_status ) {
+					$save_label = __( 'Save as Draft', NO_HASSLE_BUILDER );
+				} else if ( 'pending' === $post_status ) {
+					$save_label = __( 'Save as Pending Review', NO_HASSLE_BUILDER );
+				}
+			}
+			$args = array(
+				'id'    => 'gambit_builder_save_options',
+				'title' => '<span class="ab-icon"></span>
+							<span id="nhb-save-button" data-current-post-type="' . esc_attr( $post_status ) . '">
+								<span id="nhb-save-publish">' . esc_html__( 'Save and Publish', NO_HASSLE_BUILDER ) . '</span>
+								<span id="nhb-save-pending">' . esc_html__( 'Save as Pending Review', NO_HASSLE_BUILDER ) . '</span>
+								<span id="nhb-save-draft">' . esc_html__( 'Save as Draft', NO_HASSLE_BUILDER ) . '</span>
+							</span>',
+				'href'  => '#',
+				'meta'  => array( 'class' => 'nhb-adminbar-icon' ),
+			);
+			$wp_admin_bar->add_node( $args );
+			$args = array(
+				'id'    => 'gambit_builder_save',
+				'title' => $save_label,
+				'href'  => '#',
+				'meta'  => array( 'class' => 'nhb-adminbar-icon' ),
+			);
+			$wp_admin_bar->add_node( $args );
+			$args = array(
+				'id'    => 'gambit_builder_cancel',
+				'title' => __( 'Cancel', NO_HASSLE_BUILDER ),
+				'href'  => '#',
+				'meta'  => array( 'class' => 'nhb-adminbar-icon' ),
+			);
+			$wp_admin_bar->add_node( $args );
+			$args = array(
+				'id'    => 'gambit_builder_busy',
+				'title' => '<span class="ab-icon"></span>' . __( 'Please wait...', NO_HASSLE_BUILDER ),
+				'href'  => '#',
+				'meta'  => array( 'class' => 'nhb-adminbar-icon' ),
+			);
+			$wp_admin_bar->add_node( $args );
+
+			global $nhb_fs;
+			if ( nhb_IS_LITE || ! $nhb_fs->can_use_premium_code() ) {
+				$args = array(
+					'id'    => 'nhb_go_premium',
+					'title' => '<span class="ab-icon"></span>'
+						. __( 'Learn More About Premium', NO_HASSLE_BUILDER ),
+					'href'  => '#',
+					'meta'  => array( 'class' => 'nhb-adminbar-icon nhb-adminbar-right' ),
+				);
+				$wp_admin_bar->add_node( $args );
+			}
+
+			$args = array(
+				'id'    => 'nhb_help_docs',
+				'title' => '<span class="ab-icon"></span> ' . __( 'Help', NO_HASSLE_BUILDER ),
+				'href'  => '#',
+				'meta'  => array( 'class' => 'nhb-adminbar-icon nhb-adminbar-right' ),
+			);
+			$wp_admin_bar->add_node( $args );
+
+			if ( nhb_IS_PRO ) {
+				$args = array(
+					'id'    => 'gambit_builder_css',
+					'title' => '<span class="ab-icon"></span>' . __( 'CSS', NO_HASSLE_BUILDER ),
+					'href'  => '#',
+					'meta'  => array( 'class' => 'nhb-adminbar-icon nhb-adminbar-right' ),
+				);
+				$wp_admin_bar->add_node( $args );
+				$args = array(
+					'id'    => 'gambit_builder_js',
+					'title' => '<span class="ab-icon"></span>' . __( 'Javascript', NO_HASSLE_BUILDER ),
+					'href'  => '#',
+					'meta'  => array( 'class' => 'nhb-adminbar-icon nhb-adminbar-right' ),
+				);
+				$wp_admin_bar->add_node( $args );
+				$args = array(
+					'id'    => 'gambit_builder_source',
+					'title' => '<span class="ab-icon"></span>' . __( 'Source', NO_HASSLE_BUILDER ),
+					'href'  => '#',
+					'meta'  => array( 'class' => 'nhb-adminbar-icon nhb-adminbar-right' ),
+				);
+				$wp_admin_bar->add_node( $args );
+			}
+		}
+
+
+		/**
+		 * Adds markers to oembed URLs so nhb can edit them.
+		 *
+		 * @since 2.0
+		 *
+		 * @param string $content The current post content.
+		 *
+		 * @return string The modified content.
+		 */
+		public function add_oembed_markers( $content ) {
+			if ( ! self::is_editable_by_user() ) {
+				return $content;
+			}
+
+			// Check all one liner URLs for possible embedable URLs.
+			preg_match_all( '/^\s*(?:http|https)?(?:\:\/\/)?(?:www.)?(([A-Za-z0-9-]+\.)*[A-Za-z0-9-]+\.[A-Za-z]+)(?:\/.*)?\s*$/im', $content, $oembed_urls, PREG_SET_ORDER | PREG_OFFSET_CAPTURE );
+
+			if ( ! empty( $oembed_urls ) ) {
+
+				require_once ABSPATH . WPINC . '/class-oembed.php';
+
+				// Use the embed object for checking oembeds.
+				$embed_object = _wp_oembed_get_object();
+				$oembed_args = array(
+					'discover' => false, // Turn this off to stop remote gets, we only need to check URLs.
+				);
+
+				for ( $i = count( $oembed_urls ) - 1; $i >= 0; $i-- ) {
+					$match = $oembed_urls[ $i ];
+					$oembed_url = $match[0][0];
+
+					// Check whether the URL is an oembed URL.
+					if ( ! $embed_object->get_provider( $oembed_url, $oembed_args ) ) {
+						continue;
+					}
+
+					$modifiedo_embed_url = '<div data-ce-moveable data-ce-static data-ce-tag="embed" data-url="' . esc_url( $oembed_url ) . '">' . "\n" . $oembed_url . "\n" . '</div>';
+
+					$content = substr( $content, 0, $match[0][1] ) . $modifiedo_embed_url . substr( $content, $match[0][1] + strlen( $match[0][0] ) );
+
+				}
+			}
+
+			remove_action( 'the_content', array( $this, 'add_oembed_markers' ), 1 );
+
+			return apply_filters( 'nhb_add_oembed_markers', $content );
+		}
+
+
+		/**
+		 * When saving content, remove oembeds and bring them back to normal URLs
+		 * to let WP perform its normal embed procedures.
+		 *
+		 * @since 2.0
+		 *
+		 * @param string $content The current post content.
+		 *
+		 * @return string The modified content.
+		 */
+		public function remove_oembed_markers( $content ) {
+			if ( ! class_exists( 'simple_html_dom' ) ) {
+				require_once( inc . '/no_hassle_builder/inc/simple_html_dom.php' );
+			}
+
+			// Remove all data-shortcode and replace it with the decoded shortcode. Do this from last to first to preserve nesting.
+			$html = new simple_html_dom();
+			$html->load( stripslashes( $content ), true, false );
+
+			$elements = $html->find( '[data-ce-tag="embed"]' );
+			for ( $i = count( $elements ) - 1; $i >= 0; $i-- ) {
+				$element = $elements[ $i ];
+				$url = $element->{'data-url'};
+
+				$elements[ $i ]->outertext = '<p>' . $url . '</p>';
+			}
+			$content = (string) $html;
+
+			return apply_filters( 'nhb_remove_oembed_markers', $content );
+		}
+
+
+		/**
+		 * Strings inside preformatted text that look like shortcodes get detected
+		 * as shortcodes. To prevent this, escape "[" inside preformatted text.
+		 *
+		 * @since 3.0
+		 *
+		 * @param string $content The current post content.
+		 *
+		 * @return string The modified content.
+		 */
+		public function escape_pretext_shortcodes( $content ) {
+
+			if ( ! class_exists( 'simple_html_dom' ) ) {
+				require_once( inc.'no_hassle_builder/inc/simple_html_dom.php' );
+			}
+
+			// Remove all data-shortcode and replace it with the decoded shortcode. Do this from last to first to preserve nesting.
+			$html = new simple_html_dom();
+			$html->load( stripslashes( $content ), true, false );
+
+			$elements = $html->find( 'pre' );
+			for ( $i = count( $elements ) - 1; $i >= 0; $i-- ) {
+				$elements[ $i ]->innertext = preg_replace( '/\[/', '&#91;', $elements[ $i ]->innertext );
+			}
+			$content = (string) $html;
+
+			return apply_filters( 'nhb_escape_pretext_shortcodes', $content );
+		}
+
+
+		/**
+		 * Adds Shortcode markers to shortcode-like strings.
+		 *
+		 * @since 3.0.1
+		 *
+		 * @param array $matches The matches which are non-html tags.
+		 *
+		 * @return string The string to replace the match with.
+		 */
+		public function _add_shortcode_markers( $content ) {
+
+			// Some shortcodes register their shortcode tags late. Instead
+			// of using get_shortcode_regex(), build our own regex using the
+			// same method, but capture all sc-like tags instead of just
+			// using the registered ones.
+			// @codingStandardsIgnoreStart
+			$shortcode_pattern =
+				'\\[' // Opening bracket
+			    . '(\\[?)' // 1: Optional second opening bracket for escaping shortcodes: [[tag]].
+				    . "([^\s\\[\\]]+)" // 2: Shortcode name
+				// . "([^\\d\\s<>\\/\\[\\]][^\\s<>\\/\\[\\]]{0,})" // 2: Shortcode name
+			    . '(?![\\w-])' // Not followed by word character or hyphen
+			    . '(' // 3: Unroll the loop: Inside the opening shortcode tag
+			    .     '[^\\]\\/]*' // Not a closing bracket or forward slash
+			    .     '(?:'
+			    .         '\\/(?!\\])' // A forward slash not followed by a closing bracket
+			    .         '[^\\]\\/]*' // Not a closing bracket or forward slash
+			    .     ')*?'
+			    . ')'
+			    . '(?:'
+			    .     '(\\/)' // 4: Self closing tag ...
+			    .     '\\]' // ... and closing bracket
+			    . '|'
+			    .     '\\]' // Closing bracket
+			    .     '(?:'
+			    .         '(' // 5: Unroll the loop: Optionally, anything between the opening and closing shortcode tags
+			    .             '[^\\[]*+' // Not an opening bracket
+			    .             '(?:'
+			    .                 '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing shortcode tag
+			    .                 '[^\\[]*+' // Not an opening bracket
+			    .             ')*+'
+			    .         ')'
+			    .         '\\[\\/\\2\\]' // Closing shortcode tag
+			    .     ')?'
+			    . ')'
+			    . '(\\]?)'; // 6: Optional second closing brocket for escaping shortcodes: [[tag]]
+			// @codingStandardsIgnoreEnd
+
+			preg_match_all( "/$shortcode_pattern/", $content, $shortcodes, PREG_SET_ORDER | PREG_OFFSET_CAPTURE );
+
+			// Wrap markers around shortcodes found.
+			if ( ! empty( $shortcodes ) ) {
+				for ( $i = count( $shortcodes ) - 1; $i >= 0; $i-- ) {
+					$match = $shortcodes[ $i ];
+
+					$shortcode = substr( $content, $match[0][1], strlen( $match[0][0] ) );
+					$shortcode_tag = $match[2][0];
+					$based_shortcode = base64_encode( $shortcode );
+
+					$modified_shortcode = '<div data-ce-moveable data-ce-static data-ce-tag="shortcode" data-base="' . $shortcode_tag . '" data-shortcode="' . $based_shortcode . '">' . $shortcode . '</div>';
+					// $modified_shortcode = '<div data-ce-moveable data-ce-static data-base="' . $shortcode_tag . '" data-shortcode="' . $based_shortcode . '">' . $shortcode . '</div>';
+					$content = substr( $content, 0, $match[0][1] ) . $modified_shortcode . substr( $content, $match[0][1] + strlen( $match[0][0] ) );
+				}
+			}
+
+			return $content;
+		}
+
+
+		/**
+		 * Wrap all shortcodes with markers so nhb can handle shortcode editing.
+		 *
+		 * @since 2.0
+		 *
+		 * @param string $content The current post content.
+		 *
+		 * @return string The modified content.
+		 */
+		public function add_shortcode_markers( $content ) {
+			if ( ! self::is_editable_by_user() ) {
+				return $content;
+			}
+
+			// Ignore all brackets inside HTML tags because that may screw up our shortcode pattern. HACKY I know, but we have no choice or else we will most likely get false positive.
+			$content = preg_replace( '/(<[^>]+)(\[)([^>]+>)/', '$1—–{——$3', $content );
+			$content = preg_replace( '/(<[^>]+)(\])([^>]+>)/', '$1—–}——$3', $content );
+
+			// Add wrappers around all shortcodes that we can find.
+			$content = $this->_add_shortcode_markers( $content );
+
+			// Bring back the brackets we removed above.
+			$content = preg_replace( '/—–\{——/', '[', $content );
+			$content = preg_replace( '/—–\}——/', ']', $content );
+
+			remove_action( 'the_content', array( $this, 'add_shortcode_markers' ), 1 );
+
+			// Stray spaces can create lost paragraph tags.
+			$content = preg_replace( '/(\/\w+>)\s+(<\/\w+)/', '$1$2', $content );
+			return apply_filters( 'nhb_add_shortcode_markers', $content );
+		}
+
+
+		/**
+		 * Wrap all iframe tags so nhb can edit them.
+		 *
+		 * @since 2.7
+		 *
+		 * @param string $content The current post content.
+		 *
+		 * @return string The modified content.
+		 */
+		public function add_iframe_markers( $content ) {
+			if ( ! self::is_editable_by_user() ) {
+				return $content;
+			}
+
+			preg_match_all( '/<iframe[^>]+>\s*<\/iframe\s*>/', $content, $iframes, PREG_SET_ORDER | PREG_OFFSET_CAPTURE );
+
+			// Add markers to all iframes.
+			if ( ! empty( $iframes ) ) {
+				for ( $i = count( $iframes ) - 1; $i >= 0; $i-- ) {
+					$match = $iframes[ $i ];
+
+					$iframe = substr( $content, $match[0][1], strlen( $match[0][0] ) );
+
+					$iframe = "\n\n" . $iframe . "\n\n";
+
+					$content = substr( $content, 0, $match[0][1] ) . $iframe . substr( $content, $match[0][1] + strlen( $match[0][0] ) );
+				}
+			}
+
+			return apply_filters( 'nhb_add_iframe_markers', $content );
+		}
+
+
+		/**
+		 * Wraps the whole content in a wrapper that nhb will use for editing.
+		 *
+		 * @since 2.0
+		 *
+		 * @param string $content The post content.
+		 *
+		 * @return string The wrapped content.
+		 */
+		public function add_builder_wrapper( $content ) {
+			if ( ! self::is_editable_by_user() ) {
+				$content = '<div class="nhb-main-wrapper">' . $content . '</div>';
+			} else {
+				$content = '<div data-editable data-name="main-content" class="nhb-main-wrapper">' . $content . '</div>';
+			}
+			return apply_filters( 'nhb_add_builder_wrapper', $content );
+		}
+
+
+		/**
+		 * Fallback for the content wrapping by add_builder_wrapper. If something OVERRIDEs
+		 * the previous wrap, this will apply the wrap again.
+		 *
+		 * @since 2.8.2
+		 *
+		 * @param string $content The post content.
+		 *
+		 * @return string The wrapped content.
+		 */
+		public function add_builder_wrapper_fallback( $content ) {
+			if ( ! self::is_editable_by_user() ) {
+				return $content;
+			}
+
+			// Only do this if the wrap isn't found.
+			if ( stripos( $content, 'data-editable data-name="main-content"' ) === false ) {
+				$content = '<div data-editable data-name="main-content">' . $content . '</div>';
+				return apply_filters( 'nhb_add_builder_wrapper', $content );
+			}
+
+			return $content;
+		}
+
+
+		/**
+		 * Remove shortcode wrappers so we have the normal looking (bracketted)
+		 * shortcodes in our content when saving.
+		 *
+		 * @since 2.7
+		 *
+		 * @param string $content The current post content.
+		 *
+		 * @return string The modified content.
+		 */
+		public function remove_shortcode_markers( $content ) {
+			if ( ! class_exists( 'simple_html_dom' ) ) {
+				require_once( inc . '/no_hassle_builder/inc/simple_html_dom.php' );
+			}
+
+			// Remove all data-shortcode and replace it with the decoded shortcode. Do this from last to first to preserve nesting.
+			$html = new simple_html_dom();
+			$html->load( stripslashes( $content ), true, false );
+
+			$shortcodes = $html->find( '[data-shortcode]' );
+			for ( $i = count( $shortcodes ) - 1; $i >= 0; $i-- ) {
+				$shortcode_container = $shortcodes[ $i ];
+				$shortcode = base64_decode( $shortcode_container->{'data-shortcode'} );
+
+				$shortcodes[ $i ]->outertext = $shortcode;
+			}
+			$content = (string) $html;
+
+			return apply_filters( 'nhb_remove_shortcode_markers', $content );
+		}
+
+
+		/**
+		 * If the post has a nhb_style meta data, it means that pseudo styles are needed
+		 * by the post, add the styles to the output.
+		 *
+		 * @since 2.9
+		 *
+		 * @param string $content The html content.
+		 *
+		 * @return string The cleaned html content.
+		 */
+		public function add_spec_style_tag( $content ) {
+			global $post;
+			if ( ! $post ) {
+				return $content;
+			}
+			if ( get_post_meta( $post->ID, 'nhb_style', true ) ) {
+				$style = get_post_meta( $post->ID, 'nhb_style', true );
+				$style = wp_strip_all_tags( $style );
+				$content = '<style id="nhb-style">' . $style . '</style>' . $content;
+			}
+			return apply_filters( 'nhb_add_spec_style_tag', $content );
+		}
+
+
+		/**
+		 * Cleans up the content before saving. This is similar to the REVERSE wpautop
+		 * applied by TinyMCE via Javascript. This makes sure that we do not get stray
+		 * paragraph tags saved/rendered that mess up the output.
+		 *
+		 * We're mimicking the behavior seen when clicking 'Visual' then 'Text' in
+		 * TinyMCE, then hitting save. The process that cleans up the html during the transition
+		 * is what we want to achieve.
+		 *
+		 * @param string $content The html content.
+		 *
+		 * @return string The cleaned html content.
+		 */
+		public function cleanup_content( $content ) {
+
+			// Remove line breaks, except for those inside preformatted tags.
+			$content = preg_replace( '/[\r\n](?![^<]*<\/pre>)/', ' ', $content );
+
+			// Separate divs into their own lines.
+			$content = preg_replace( '/(<\/?div[^>]*>)[\s]+/', "$1\n", $content );
+
+			// Replace simple p tags with \n\n.
+			$content = preg_replace( '/\s*<p>\s*(.*?)\s*<\/p>\s*/', "\n\n$1\n\n", $content );
+
+			// Cleanup remaining p tags, remove the start and end spaces.
+			$content = preg_replace( '/(<p[^>]*>)\s*(.*?)\s*(<\/p>)/', '$1$2$3', $content );
+
+			// Cleanup remaining p tags, remove the trailing spaces.
+			$content = preg_replace( '/(<\/p>)\s*(<\/\w+>)/', "$1\n\n$2", $content );
+
+			// Multiple p tags can convert to multiple \n's, just keep to 2 \ns.
+			$content = preg_replace( '/\n\n{2,}/', "\n\n", $content );
+
+			// Noscripts can sometimes appear because of some plugins, this messes up the content.
+			$content = preg_replace( '/<noscript[^>]*>.*?<\/noscript>/', '', $content );
+
+			return apply_filters( 'nhb_cleanup_content', $content );
+		}
+
+
+		/**
+		 * Ajax save content handler.
+		 *
+		 * @since 2.0
+		 *
+		 * @return void
+		 */
+		public function save_content() {
+
+			// Check if we have the necessary fields.
+			if ( empty( $_POST['post_id'] ) ||  // Input var: okay.
+				 ( ! isset( $_POST['title'] ) && empty( $_POST['post_status'] ) && ! isset( $_POST['main-content'] ) ) ||  // Input var: okay.
+				 empty( $_POST['save_nonce'] ) ) { // Input var: okay.
+				die();
+			}
+
+			// Security check.
+			if ( ! wp_verify_nonce( sanitize_key( $_POST['save_nonce'] ), 'nhb' ) ) { // Input var: okay.
+				die();
+			}
+
+			// Sanitize data.
+			$post_id = intval( $_POST['post_id'] ); // Input var: okay.
+
+			$post_data = array(
+				'ID' => $post_id,
+			);
+
+			// Check if we just need to update the status.
+			if ( ! empty( $_POST['post_status'] ) ) { // Input var: okay.
+				$post_data['post_status'] = sanitize_text_field( wp_unslash( $_POST['post_status'] ) ); // Input var: okay.
+			}
+
+			// The new content.
+			if ( isset( $_POST['main-content'] ) ) { // Input var: okay.
+				$content = sanitize_post_field( 'post_content', wp_unslash( $_POST['main-content'] ), $post_id, 'db' ); // Input var: okay. WPCS: sanitization ok.
+				$content = apply_filters( 'nhb_save_content', $content, $post_id );
+
+				$post_data['post_content'] = $content;
+				$post_data['post_content_filtered'] = ''; // Blank this field to clear cached copies of the content. This is to also support Jetpack's Markdown module.
+			}
+
+			$post_data = apply_filters( 'nhb_save_content_data', $post_data, $_POST, $post_id ); // Input var: okay.
+
+			// Update the post.
+			$post_id = wp_update_post( $post_data );
+
+			if ( ! empty( $_POST['style'] ) ) { // Input var: okay.
+				$style = sanitize_post_field( 'post_content', wp_unslash( $_POST['style'] ), $post_id, 'db' ); // Input var: okay. WPCS: sanitization ok.
+				$style = wp_strip_all_tags( $style );
+				$style = apply_filters( 'nhb_save_style', $style, $post_id );
+				update_post_meta( $post_id, 'nhb_style', $style );
+			} else {
+				delete_post_meta( $post_id, 'nhb_style' );
+			}
+
+			do_action( 'nhb_saved_content', $post_id );
+
+			die( esc_url( get_permalink( $post_id ) ) );
+		}
+
+
+		/**
+		 * Includes admin scripts and styles needed.
+		 *
+		 * @since	1.0
+		 *
+		 * @return	void
+		 */
+		public function enqueue_admin_scripts() {
+
+			// Admin styles.
+			wp_enqueue_style( __CLASS__ . '-admin', plugins_url( 'no_hassle_builder/css/admin.min.css', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+
+			$js_dir = defined( 'WP_DEBUG' ) && WP_DEBUG ? 'dev' : 'min';
+			$js_suffix = defined( 'WP_DEBUG' ) && WP_DEBUG ? '' : '-min';
+
+			global $nhb_fs;
+			$localize_params = array(
+				'is_lite' => nhb_IS_LITE || ! $nhb_fs->can_use_premium_code(),
+			);
+			$localize_params = apply_filters( 'nhb_localize_admin_scripts', $localize_params );
+
+			// Admin javascript.
+			wp_enqueue_script( __CLASS__ . '-admin', plugins_url( 'no_hassle_builder/js/' . $js_dir . '/admin' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+			wp_localize_script( __CLASS__ . '-admin', 'nhbParams', $localize_params );
+		}
+
+
+		/**
+		 * Make the TinyMCE editor content look pretty.
+		 *
+		 * @since 1.0
+		 *
+		 * @return void
+		 */
+		public function add_editor_styles() {
+		    add_editor_style( plugins_url( 'no_hassle_builder/css/style.min.css', dirname(__FILE__) ) );
+		}
+
+
+		/**
+		 * Includes frontend scripts needed for non-editors.
+		 *
+		 * @since 2.7
+		 *
+		 * @return void
+		 */
+		public function enqueue_frontend() {
+			$js_dir = defined( 'WP_DEBUG' ) && WP_DEBUG ? 'dev' : 'min';
+			$js_suffix = defined( 'WP_DEBUG' ) && WP_DEBUG ? '' : '-min';
+
+			wp_enqueue_style( __CLASS__ , plugins_url( 'no_hassle_builder/css/style.min.css', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+
+			wp_enqueue_script( __CLASS__, plugins_url( 'no_hassle_builder/js/' . $js_dir . '/frontend' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+		}
+
+
+		/**
+		 * Includes frontend scripts needed for editors.
+		 *
+		 * @since 1.0
+		 *
+		 * @return void
+		 */
+		public function enqueue_editor() {
+
+			$js_dir = defined( 'WP_DEBUG' ) && WP_DEBUG ? 'dev' : 'min';
+			$js_suffix = defined( 'WP_DEBUG' ) && WP_DEBUG ? '' : '-min';
+
+			if ( ! self::is_editable_by_user() ) {
+				return;
+			}
+
+			// Load WP Template.
+			wp_enqueue_script( 'wp-util' );
+
+			// Used for inspector views and templating.
+			wp_enqueue_script( 'backbone' );
+
+			// Used for the media manager modal.
+			wp_enqueue_script( 'media-editor' );
+
+			// Requirements for the image editor (replace, edit & crop).
+			wp_enqueue_script( 'image-edit', admin_url( '/js/image-edit.js' ) );
+			wp_enqueue_script( 'imgareaselect' );
+			wp_enqueue_style( 'imgareaselect' );
+			wp_enqueue_style( 'media' );
+			wp_enqueue_script( 'media' );
+
+			wp_enqueue_style( 'wp-color-picker' );
+			wp_enqueue_script( 'jquery-ui-core' );
+			wp_enqueue_script( 'jquery-ui-slider' );
+
+			// Link dialog modal.
+			wp_enqueue_style( 'editor-buttons' );
+			wp_enqueue_script( 'wplink' );
+
+			do_action( 'nhb_enqueue_scripts' );
+
+			// Load WP's color picker.
+			wp_enqueue_style( 'wp-color-picker' );
+			wp_enqueue_script( 'iris', admin_url( 'js/iris.min.js' ), array( 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ), false, 1 );
+
+			// Various icons used in nhb.
+			wp_enqueue_style( 'dashicons' );
+			wp_enqueue_style( 'genericons', plugins_url( 'no_hassle_builder/css/inc/genericons/genericons.min.css', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+			wp_enqueue_media();
+
+			// Enqueue wp.hooks script since it's not yet in Core.
+			wp_enqueue_script( 'event-manager', plugins_url( 'no_hassle_builder/js/' . $js_dir . '/inc/event-manager/event-manager' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+
+			// Content Tools.
+			wp_enqueue_style( 'content-tools', plugins_url( 'no_hassle_builder/css/inc/content-tools/content-tools.min.css', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+			wp_enqueue_script( 'content-tools', plugins_url( 'no_hassle_builder/js/' . $js_dir . '/inc/content-tools/content-tools' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+
+			// Main nhb editor script.
+			wp_enqueue_style( __CLASS__ . '-builder' , plugins_url( 'no_hassle_builder/css/editor.min.css', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+			wp_enqueue_script( __CLASS__ . '-builder', plugins_url( 'no_hassle_builder/js/' . $js_dir . '/script' . $js_suffix . '.js', dirname(__FILE__) ), array( 'content-tools', 'backbone', 'wp-util', 'media-editor', 'iris' ), VERSION_NO_HASSLE_BUILDER );
+
+			// Display error notices with nhb.
+			wp_enqueue_script( __CLASS__ . '-error-notice', plugins_url( 'no_hassle_builder/js/' . $js_dir . '/script-error-notice' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER );
+
+			$error_notice_params = array();
+			$error_notice_params = apply_filters( 'nhb_error_notice_localize_scripts', $error_notice_params );
+
+			wp_localize_script( __CLASS__ . '-error-notice', 'errorNoticeParams', $error_notice_params );
+
+			// We need a dummy image ID for the images in pre-designed sections,
+			// This is so that the replace/edit buttons appear in the media manager.
+			$query = new WP_Query( array(
+				'post_status' => 'any',
+				'post_type' => 'attachment',
+				'posts_per_page' => 1,
+			) );
+			$dummy_image_id = 0;
+			if ( $query->have_posts() ) {
+				$query->the_post();
+				$dummy_image_id = get_the_ID();
+			}
+			wp_reset_postdata();
+
+			global $nhb_fs;
+			$localize_params = array(
+				'is_lite' => nhb_IS_LITE || ! $nhb_fs->can_use_premium_code(),
+				'is_rtl' => is_rtl(),
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'admin_url' => admin_url( '/' ),
+				'post_id' => $GLOBALS['post']->ID,
+				'theme_name' => str_replace( ' ', '-', strtolower( wp_get_theme()->Name ) ),
+				'theme' => wp_get_theme()->Name,
+				'stylesheet_directory_uri' => trailingslashit( get_stylesheet_directory_uri() ),
+				'nonce' => wp_create_nonce( 'nhb' ),
+				'shortcodes' => self::get_all_shortcodes(),
+				'shortcodes_to_hide' => apply_filters( 'nhb_shortcodes_to_hide_in_picker', array() ),
+				'default_icon' => plugins_url( 'no_hassle_builder/images/shortcode-icon.png', dirname(__FILE__) ),
+				'additional_shortcodes' => apply_filters( 'nhb_shortcodes', array() ),
+				'is_admin_bar_showing' => is_admin_bar_showing(),
+				'plugin_url' => trailingslashit( plugins_url( '/', dirname(__FILE__) ) ),
+				'post_status' => ! empty( $GLOBALS['post']->ID ) ? get_post_status( $GLOBALS['post']->ID ) : '',
+				'dummy_image_id' => $dummy_image_id,
+				'buy_url' => admin_url( '/admin.php?page=no-hassle-builder-pricing' ),
+			);
+			$localize_params = apply_filters( 'nhb_localize_scripts', $localize_params );
+
+			wp_localize_script( __CLASS__ . '-builder', 'nhbParams', $localize_params );
+
+		}
+
+
+		/**
+		 * Get all ContentTool/ContentEdit tags/elements used in the content, then run
+		 * filters to enqueue the scripts needed by those used tags/elements.
+		 *
+		 * @since 2.7
+		 *
+		 * @param string $content The post content.
+		 *
+		 * @return string The original post content.
+		 */
+		public function gather_ce_tags( $content ) {
+
+			preg_match_all( '/data\-ce\-tag=[\'"]([^\'"]+)[\'"]/', $content, $data_tags, PREG_PATTERN_ORDER );
+
+			if ( empty( $data_tags[1] ) ) {
+				return $content;
+			}
+
+			$tags = array_unique( $data_tags[1] );
+			foreach ( $tags as $tag ) {
+				$tag = strtolower( $tag );
+				do_action( "nhb_enqueue_element_scripts_{$tag}", $tag );
+			}
+
+			return $content;
+		}
+
+
+		/**
+		 * Gets all available shortcodes in the site.
+		 *
+		 * @since 2.0
+		 *
+		 * @return array The array of available shortcodes.
+		 */
+		public static function get_all_shortcodes() {
+			$shortcodes = array();
+			$ignored_functions = array(
+				'__return_false',
+				'__return_null',
+			);
+
+			global $shortcode_tags;
+			if ( is_array( $shortcode_tags ) ) {
+				foreach ( $shortcode_tags as $base => $function ) {
+					if ( in_array( $function, $ignored_functions, true ) ) {
+						continue;
+					}
+					if ( in_array( $base, $shortcodes, true ) ) {
+						continue;
+					}
+					$shortcodes[] = $base;
+				}
+			}
+
+			/**
+			 * The embed shortcode isn't included by default in the list
+			 * UNLESS you have an embed shortcode already in there,
+			 * add it into the list.
+			 */
+			if ( array_search( 'embed', $shortcodes ) === false ) {
+				if ( ! empty( $GLOBALS['wp_embed'] ) ) {
+					$shortcodes[] = 'embed';
+					add_shortcode( 'embed', array( $GLOBALS['wp_embed'], 'shortcode' ) );
+				}
+			}
+
+			return apply_filters( 'nhb_get_all_shortcodes', $shortcodes );
+		}
+	}
+
+	new NoHassleBuilder();
+
+}

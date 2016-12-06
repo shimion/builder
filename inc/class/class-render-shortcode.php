@@ -5,19 +5,19 @@
  * This class is in charge of getting rendered shortcodes to show up in the
  * frontend builder for previewing.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
 // Initializes Shortcode class.
-if ( ! class_exists( 'PBSRenderShortcode' ) ) {
+if ( ! class_exists( 'nhbRenderShortcode' ) ) {
 
 	/**
 	 * This is where all the plugin's functionality happens.
 	 */
-	class PBSRenderShortcode {
+	class nhbRenderShortcode {
 
 
 		/**
@@ -79,17 +79,17 @@ if ( ! class_exists( 'PBSRenderShortcode' ) ) {
 		 */
 		public function is_doing_shortcode_render( $check_user_priv = true ) {
 			if ( $check_user_priv ) {
-				if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+				if ( ! NoHassleBuilder::is_editable_by_user() ) {
 					return false;
 				}
 			}
 			if ( empty( $_POST['nonce'] ) ) { // Input var: okay.
 				return false;
 			}
-			if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'pbs' ) ) { // Input var: okay.
+			if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'nhb' ) ) { // Input var: okay.
 				return false;
 			}
-			if ( empty( $_POST['action'] ) || 'pbs_shortcode_render' !== $_POST['action'] ) { // Input var: okay.
+			if ( empty( $_POST['action'] ) || 'nhb_shortcode_render' !== $_POST['action'] ) { // Input var: okay.
 				return false;
 			}
 			return true;
@@ -240,11 +240,11 @@ if ( ! class_exists( 'PBSRenderShortcode' ) ) {
 /**
  * This is needed during shortcode rendering, we need to do this at the root level.
  */
-if ( ! empty( $_POST['action'] ) && ! empty( $_POST['nonce'] ) && 'pbs_shortcode_render' === $_POST['action'] ) { // Input var: okay.
+if ( ! empty( $_POST['action'] ) && ! empty( $_POST['nonce'] ) && 'nhb_shortcode_render' === $_POST['action'] ) { // Input var: okay.
 
 	// Don't do this while in login pages.
 	if ( ! empty( $GLOBALS['pagenow'] ) && ! in_array( $GLOBALS['pagenow'], array( 'wp-login.php', 'wp-register.php' ), true ) ) {
 		ob_start();
-		PBSRenderShortcode::$did_initial_ob_start = true;
+		nhbRenderShortcode::$did_initial_ob_start = true;
 	}
 }

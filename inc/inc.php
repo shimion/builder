@@ -6,7 +6,7 @@ require_once( classes . 'module-migration.php' );
 // This is the main plugin functionality.
 require_once( classes . 'class-compatibility.php' );
 require_once( classes . 'class-render-shortcode.php' );
-require_once( classes . 'class-page-builder-sandwich.php' );
+require_once( classes . 'class-no-hassle-builder.php' );
 require_once( classes . 'class-migration.php' );
 require_once( classes . 'class-intro.php' );
 require_once( classes . 'class-meta-box.php' );

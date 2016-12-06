@@ -2,18 +2,18 @@
 /**
  * Meta box in the post/page editor in the backend.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSMetaBox' ) ) {
+if ( ! class_exists( 'nhbMetaBox' ) ) {
 
 	/**
 	 * This is where all the meta box functionality happens.
 	 */
-	class PBSMetaBox {
+	class nhbMetaBox {
 
 		/**
 		 * Hook into the backend.
@@ -23,7 +23,7 @@ if ( ! class_exists( 'PBSMetaBox' ) ) {
 				return;
 			}
 
-			add_filter( 'pbs_localize_admin_scripts', array( $this, 'localize_admin_scripts' ) );
+			add_filter( 'nhb_localize_admin_scripts', array( $this, 'localize_admin_scripts' ) );
 			add_action( 'add_meta_boxes', array( $this, 'add_side_meta_box' ), 0 );
 		}
 
@@ -65,8 +65,8 @@ if ( ! class_exists( 'PBSMetaBox' ) ) {
 		public function add_side_meta_box() {
 			$is_saved = get_post_status() !== 'auto-draft';
 			$callback = $is_saved ? 'meta_box_content_saved' : 'meta_box_content_not_saved';
-			add_meta_box( 'pbs-meta-box', 'Page Builder Sandwich', array( $this, $callback ), 'post', 'side', 'high' );
-			add_meta_box( 'pbs-meta-box', 'Page Builder Sandwich', array( $this, $callback ), 'page', 'side', 'high' );
+			add_meta_box( 'nhb-meta-box', 'No Hassle Builder', array( $this, $callback ), 'post', 'side', 'high' );
+			add_meta_box( 'nhb-meta-box', 'No Hassle Builder', array( $this, $callback ), 'page', 'side', 'high' );
 		}
 
 
@@ -85,7 +85,7 @@ if ( ! class_exists( 'PBSMetaBox' ) ) {
 				<em>
 					<?php
 					printf(
-						esc_html__( 'You will need to save your %s first before you can edit it with Page Builder Sandwich.', PAGE_BUILDER_SANDWICH ),
+						esc_html__( 'You will need to save your %s first before you can edit it with No Hassle Builder.', NO_HASSLE_BUILDER ),
 						esc_html__( strtolower( $post_type->labels->singular_name ) )
 					);
 					?>
@@ -107,16 +107,16 @@ if ( ! class_exists( 'PBSMetaBox' ) ) {
 				<em>
 					<?php
 					printf(
-						esc_html__( 'Visit this %s in your front-end to begin editing.', PAGE_BUILDER_SANDWICH ),
+						esc_html__( 'Visit this %s in your front-end to begin editing.', NO_HASSLE_BUILDER ),
 						esc_html__( strtolower( $post_type->labels->singular_name ) )
 					);
 					?>
 				</em>
 			</p>
-			<input value='<?php echo esc_attr( __( 'Edit with Page Builder Sandwich', PAGE_BUILDER_SANDWICH ) ) ?>' type='button' id='pbs-admin-edit-with-pbs' class='button button-large'/>
+			<input value='<?php echo esc_attr( __( 'Edit with No Hassle Builder', NO_HASSLE_BUILDER ) ) ?>' type='button' id='nhb-admin-edit-with-nhb' class='button button-large'/>
 			<?php
 		}
 	}
 }
 
-new PBSMetaBox();
+new nhbMetaBox();

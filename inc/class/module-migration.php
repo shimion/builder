@@ -4,18 +4,18 @@
  *
  * @since 3.2
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 // @codingStandardsIgnoreStart
 
-	if ( ! defined( 'PBS__EDD_DOWNLOAD_URL' ) ) {
+	if ( ! defined( 'nhb__EDD_DOWNLOAD_URL' ) ) {
 		// This should point to your EDD install.
-		define( 'PBS__EDD_DOWNLOAD_URL', 'http://pagebuildersandwich.com' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
+		define( 'nhb__EDD_DOWNLOAD_URL', 'http://pagebuildersandwich.com' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 	}
 
 	// The EDD download ID of your product.
-	define( 'PBS__EDD_DOWNLOAD_ID', '118' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
+	define( 'nhb__EDD_DOWNLOAD_ID', '118' ); // you should use your own CONSTANT name, and be sure to replace it throughout this file
 
 	/**
 	 * The license migration script.
@@ -33,7 +33,7 @@
 	 *
 	 * @return bool
 	 */
-	function pbs_do_my_edd2fs_license_migration(
+	function nhb_do_my_edd2fs_license_migration(
 		$edd_download_id,
 		$edd_license_key,
 		$edd_store_url,
@@ -42,7 +42,7 @@
 		/**
 		 * @var \Freemius $fs
 		 */
-		$fs = pbs_fs();
+		$fs = nhb_fs();
 
 		$install_details = $fs->get_opt_in_params();
 
@@ -143,7 +143,7 @@
 	 *
 	 * @return bool Is successfully spawned the migration request.
 	 */
-	function pbs_spawn_my_edd2fs_license_migration( $edd_download_id ) {
+	function nhb_spawn_my_edd2fs_license_migration( $edd_download_id ) {
 		global $wp;
 
 		#region Make sure only one request handles the migration (prevent race condition)
@@ -216,7 +216,7 @@
 	 *
 	 * @return string|bool
 	 */
-	function pbs_my_non_blocking_edd2fs_license_migration(
+	function nhb_my_non_blocking_edd2fs_license_migration(
 		$edd_download_id,
 		$edd_license_key,
 		$edd_store_url,
@@ -225,7 +225,7 @@
 		/**
 		 * @var \Freemius $fs
 		 */
-		$fs = pbs_fs();
+		$fs = nhb_fs();
 
 		if ( ! $fs->has_api_connectivity() ) {
 			// No connectivity to Freemius API, it's up to you what to do.
@@ -257,14 +257,14 @@
 
 		if ( ! $is_blocking && ! $in_migration ) {
 			// Initiate license migration in a non-blocking request.
-			return pbs_spawn_my_edd2fs_license_migration( $edd_download_id );
+			return nhb_spawn_my_edd2fs_license_migration( $edd_download_id );
 		} else {
 			if ( $is_blocking ||
 			     ( ! empty( $_REQUEST[ 'fsm_edd_' . $edd_download_id ] ) &&
 			       $migration_uid === $_REQUEST[ 'fsm_edd_' . $edd_download_id ] &&
 			       'POST' === $_SERVER['REQUEST_METHOD'] )
 			) {
-				$success = pbs_do_my_edd2fs_license_migration(
+				$success = nhb_do_my_edd2fs_license_migration(
 					$edd_download_id,
 					$edd_license_key,
 					$edd_store_url
@@ -291,17 +291,17 @@
 	 *
 	 * @return bool
 	 */
-	function pbs_my_edd_activate_license( $license_key ) {
+	function nhb_my_edd_activate_license( $license_key ) {
 		// Call the custom API.
 		$response = wp_remote_post(
-			PBS__EDD_DOWNLOAD_URL,
+			nhb__EDD_DOWNLOAD_URL,
 			array(
 				'timeout'   => 15,
 				'sslverify' => false,
 				'body'      => array(
 					'edd_action' => 'activate_license',
 					'license'    => $license_key,
-					'item_id'    => PBS__EDD_DOWNLOAD_ID,
+					'item_id'    => nhb__EDD_DOWNLOAD_ID,
 					'url'        => home_url()
 				)
 			)
@@ -317,7 +317,7 @@
 
 		if ( 'valid' === $license_data->license ) {
 			// Store EDD license key.
-			update_option( 'pbs_edd_license_key', $license_key );
+			update_option( 'nhb_edd_license_key', $license_key );
 		} else {
 			return false;
 		}
@@ -340,7 +340,7 @@
 	 *
 	 * @return object|string
 	 */
-	function pbs_try_migrate_on_activation( $response, $args ) {
+	function nhb_try_migrate_on_activation( $response, $args ) {
 		if ( empty( $args['license_key'] ) || 32 !== strlen( $args['license_key'] ) ) {
 			// No license key provided (or invalid length), ignore.
 			return $response;
@@ -349,7 +349,7 @@
 		/**
 		 * @var \Freemius $fs
 		 */
-		$fs = pbs_fs();
+		$fs = nhb_fs();
 
 		if ( ! $fs->has_api_connectivity() ) {
 			// No connectivity to Freemius API, it's up to you what to do.
@@ -361,12 +361,12 @@
 		if ( ( is_object( $response->error ) && 'invalid_license_key' === $response->error->code ) ||
 		     ( is_string( $response->error ) && false !== strpos( strtolower( $response->error ), 'license' ) )
 		) {
-			if ( pbs_my_edd_activate_license( $license_key ) ) {
+			if ( nhb_my_edd_activate_license( $license_key ) ) {
 				// Successfully activated license on EDD, try to migrate to Freemius.
-				if ( pbs_do_my_edd2fs_license_migration(
-					PBS__EDD_DOWNLOAD_ID,
+				if ( nhb_do_my_edd2fs_license_migration(
+					nhb__EDD_DOWNLOAD_ID,
 					$license_key,
-					PBS__EDD_DOWNLOAD_URL,
+					nhb__EDD_DOWNLOAD_URL,
 					true
 				) ) {
 					/**
@@ -447,7 +447,7 @@
 
 	if ( ! defined( 'DOING_CRON' ) ) {
 		// Pull EDD license key from storage.
-		$license_key = trim( get_option( 'pbs_edd_license_key' ) );
+		$license_key = trim( get_option( 'nhb_edd_license_key' ) );
 
 		/**
 		 * If no EDD license is set it might be one of the following:
@@ -460,14 +460,14 @@
 		 * event. That way, if a license activation fails, try activating the license on EDD
 		 * first, and if works, migrate to Freemius right after.
 		 */
-		pbs_fs()->add_filter( 'after_install_failure', 'pbs_try_migrate_on_activation', 10, 2 );
+		nhb_fs()->add_filter( 'after_install_failure', 'nhb_try_migrate_on_activation', 10, 2 );
 
 		if ( ! empty( $license_key ) ) {
 			if ( ! defined( 'DOING_AJAX' ) ) {
-				pbs_my_non_blocking_edd2fs_license_migration(
-					PBS__EDD_DOWNLOAD_ID,
+				nhb_my_non_blocking_edd2fs_license_migration(
+					nhb__EDD_DOWNLOAD_ID,
 					$license_key,
-					PBS__EDD_DOWNLOAD_URL
+					nhb__EDD_DOWNLOAD_URL
 				);
 			}
 		}

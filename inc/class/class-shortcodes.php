@@ -1,23 +1,23 @@
 <?php
 /**
- * ALL Shortcodes used by Page Builder Sandwich.
- * This can spun off into another plugin so that PBS can be turned off and the shortcodes
+ * ALL Shortcodes used by No Hassle Builder.
+ * This can spun off into another plugin so that nhb can be turned off and the shortcodes
  * can be retained.
  *
  * @since 2.11
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSShortcodes' ) ) {
+if ( ! class_exists( 'nhbShortcodes' ) ) {
 
 	/**
 	 * This is where all the shortcode functionality happens.
 	 */
-	class PBSShortcodes {
+	class nhbShortcodes {
 
 		/**
 		 * Shortcodes to hide from the frontend.
@@ -25,8 +25,8 @@ if ( ! class_exists( 'PBSShortcodes' ) ) {
 		 * @var array
 		 */
 		private $shortcodes_to_hide = array(
-			'pbs_widget',
-			'pbs_sidebar',
+			'nhb_widget',
+			'nhb_sidebar',
 		);
 
 
@@ -42,14 +42,14 @@ if ( ! class_exists( 'PBSShortcodes' ) ) {
 		 * Hook into the frontend.
 		 */
 		function __construct() {
-			add_shortcode( 'pbs_widget', array( $this, 'widget' ) );
-			add_shortcode( 'pbs_sidebar', array( $this, 'sidebar' ) );
-			add_filter( 'pbs_shortcodes_to_hide_in_picker', array( $this, 'hide_shortcodes_from_picker' ) );
+			add_shortcode( 'nhb_widget', array( $this, 'widget' ) );
+			add_shortcode( 'nhb_sidebar', array( $this, 'sidebar' ) );
+			add_filter( 'nhb_shortcodes_to_hide_in_picker', array( $this, 'hide_shortcodes_from_picker' ) );
 		}
 
 
 		/**
-		 * Remove PBS internal shortcodes from the shortcode picker modal & other processes.
+		 * Remove nhb internal shortcodes from the shortcode picker modal & other processes.
 		 *
 		 * @since 2.18
 		 *
@@ -87,7 +87,7 @@ if ( ! class_exists( 'PBSShortcodes' ) ) {
 
 			ob_start();
 			the_widget( $widget_slug, $atts, array(
-				'widget_id' => 'pbs_widget_' . $this->widget_ids++,
+				'widget_id' => 'nhb_widget_' . $this->widget_ids++,
 			) );
 			return ob_get_clean();
 		}
@@ -106,7 +106,7 @@ if ( ! class_exists( 'PBSShortcodes' ) ) {
 		public function sidebar( $atts, $content = '' ) {
 			$atts = shortcode_atts( array(
 				'id' => '',
-			), $atts, 'pbs_sidebar' );
+			), $atts, 'nhb_sidebar' );
 
 			if ( empty( $atts['id'] ) ) {
 				return '';
@@ -123,4 +123,4 @@ if ( ! class_exists( 'PBSShortcodes' ) ) {
 	}
 }
 
-new PBSShortcodes();
+new nhbShortcodes();

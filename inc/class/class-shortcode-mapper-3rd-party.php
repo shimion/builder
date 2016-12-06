@@ -4,23 +4,23 @@
  *
  * Functionality:
  * 1. Checks for other shortcode mapping systems,
- * 2. Converts mapped shortcodes from other systems to PBS,
- * 3. Simulates 3rd party mapping functions to convert them to PBS
+ * 2. Converts mapped shortcodes from other systems to nhb,
+ * 3. Simulates 3rd party mapping functions to convert them to nhb
  *
  * @since 2.19
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSShortcodeMapper3rdParty' ) ) {
+if ( ! class_exists( 'nhbShortcodeMapper3rdParty' ) ) {
 
 	/**
 	 * This is where all the shortcode mapper functionality happens.
 	 */
-	class PBSShortcodeMapper3rdParty {
+	class nhbShortcodeMapper3rdParty {
 
 		/**
 		 * Hook into the frontend.
@@ -113,4 +113,4 @@ if ( ! class_exists( 'PBSShortcodeMapper3rdParty' ) ) {
 }
 
 // Commented because this is not ready yet!
-// new PBSShortcodeMapper3rdParty(); // @codingStandardsIgnoreLine
+// new nhbShortcodeMapper3rdParty(); // @codingStandardsIgnoreLine

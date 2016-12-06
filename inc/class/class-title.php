@@ -2,18 +2,18 @@
 /**
  * Title editing functionality.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSTitle' ) ) {
+if ( ! class_exists( 'nhbTitle' ) ) {
 
 	/**
 	 * This is where all the title editing functionality happens.
 	 */
-	class PBSTitle {
+	class nhbTitle {
 
 
 		/**
@@ -41,7 +41,7 @@ if ( ! class_exists( 'PBSTitle' ) ) {
 			add_action( 'wp_head', array( $this, 'done_with_header' ) );
 			add_action( 'wp_footer', array( $this, 'done_with_footer' ) );
 
-			add_filter( 'pbs_save_content_data', array( $this, 'save_title' ), 10, 3 );
+			add_filter( 'nhb_save_content_data', array( $this, 'save_title' ), 10, 3 );
 		}
 
 
@@ -70,7 +70,7 @@ if ( ! class_exists( 'PBSTitle' ) ) {
 		 * @param int    $post_id The post id.
 		 */
 		public function add_title_markers( $title, $post_id ) {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return $title;
 			}
 			global $post;
@@ -80,7 +80,7 @@ if ( ! class_exists( 'PBSTitle' ) ) {
 			if ( ! $this->done_with_header || $this->done_with_footer ) {
 				return $title;
 			}
-			return $title . '<span data-pbs-title-marker-post-id="' . esc_attr( $post_id ) . '"></span>';
+			return $title . '<span data-nhb-title-marker-post-id="' . esc_attr( $post_id ) . '"></span>';
 		}
 
 
@@ -106,4 +106,4 @@ if ( ! class_exists( 'PBSTitle' ) ) {
 	}
 }
 
-new PBSTitle();
+new nhbTitle();

@@ -2,22 +2,22 @@
 /**
  * Map Element class.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSElementMap' ) ) {
+if ( ! class_exists( 'nhbElementMap' ) ) {
 
 	/**
 	 * This is where all the map element functionality happens.
 	 */
-	class PBSElementMap {
+	class nhbElementMap {
 
 
 		/**
-		 * Google Maps API Key for PBS.
+		 * Google Maps API Key for nhb.
 		 */
 		const GOOGLE_API_KEY = 'AIzaSyD5oMOq3XPDiMv3Cn4ZDPloR3G2o0t1dU0';
 
@@ -26,7 +26,7 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 		 * Hook into WordPress.
 		 */
 		function __construct() {
-			add_action( 'pbs_enqueue_element_scripts_map', array( $this, 'add_map_script' ) );
+			add_action( 'nhb_enqueue_element_scripts_map', array( $this, 'add_map_script' ) );
 			add_filter( 'script_loader_tag', array( $this, 'enqueue_deferred_map_script' ), 10, 3 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_editor' ) );
 		}
@@ -53,14 +53,14 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 			$js_dir = defined( 'WP_DEBUG' ) && WP_DEBUG ? 'dev' : 'min';
 			$js_suffix = defined( 'WP_DEBUG' ) && WP_DEBUG ? '' : '-min';
 
-			$google_map_url = 'https://maps.googleapis.com/maps/api/js?key=%s&callback=initPBSMaps';
+			$google_map_url = 'https://maps.googleapis.com/maps/api/js?key=%s&callback=initnhbMaps';
 
 			$locale = get_locale();
 
 			// China locales should be served in China.
 			// @see https://developers.google.com/maps/documentation/javascript/localization#Language.
 			if ( 'zh_CN' === $locale ) {
-				$google_map_url = 'https://maps.google.cn/maps/api/js?region=cn&key=%s&callback=initPBSMaps';
+				$google_map_url = 'https://maps.google.cn/maps/api/js?region=cn&key=%s&callback=initnhbMaps';
 			}
 
 			// Add the API Key.
@@ -79,13 +79,13 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 			$google_map_url .= '&language=' . $language;
 
 			// Enqueue the scripts.
-			wp_enqueue_script( 'pbs-element-map', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/frontend-map' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH, true );
-			wp_enqueue_script( 'pbs-element-map-lib', $google_map_url, array( 'pbs-element-map' ), VERSION_PAGE_BUILDER_SANDWICH, true );
+			wp_enqueue_script( 'nhb-element-map', plugins_url( 'no_hassle_builder/js/' . $js_dir . '/frontend-map' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_NO_HASSLE_BUILDER, true );
+			wp_enqueue_script( 'nhb-element-map-lib', $google_map_url, array( 'nhb-element-map' ), VERSION_NO_HASSLE_BUILDER, true );
 		}
 
 
 		/**
-		 * Adds defer and async attributes to the pbs-element-map script.
+		 * Adds defer and async attributes to the nhb-element-map script.
 		 *
 		 * @since 2.16
 		 *
@@ -96,7 +96,7 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 		 * @return The <script> tag that will be printed out.
 		 */
 		public function enqueue_deferred_map_script( $tag, $handle, $src ) {
-		    if ( in_array( $handle, array( 'pbs-element-map-lib', 'pbs-element-map' ), true ) ) {
+		    if ( in_array( $handle, array( 'nhb-element-map-lib', 'nhb-element-map' ), true ) ) {
 				// @codingStandardsIgnoreLine
 		        return '<script type=\'text/javascript\' src=\'' . $src . '\' defer></script>' . "\n";
 		    }
@@ -113,7 +113,7 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 		 * @return void
 		 */
 		public function enqueue_editor() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
 
@@ -122,4 +122,4 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 	}
 }
 
-new PBSElementMap();
+new nhbElementMap();

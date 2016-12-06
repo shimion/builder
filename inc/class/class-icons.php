@@ -1,19 +1,19 @@
 <?php
 /**
- * Icon support for Page Builder Sandwich
+ * Icon support for No Hassle Builder
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSIcons' ) ) {
+if ( ! class_exists( 'nhbIcons' ) ) {
 
 	/**
 	 * This is where all the icon functionality happens.
 	 */
-	class PBSIcons {
+	class nhbIcons {
 
 
 		/**
@@ -592,8 +592,8 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 			add_filter( 'the_content', array( $this, 'prepend_icon_data' ), 11 );
 			add_filter( 'tiny_mce_before_init', array( $this, 'allow_svgs_in_tinymce' ), 20 );
 			add_filter( 'teeny_mce_before_init', array( $this, 'allow_svgs_in_tinymce' ), 20 );
-			add_action( 'wp_ajax_pbs_icon_search', array( $this, 'search_icon' ) );
-			add_filter( 'pbs_localize_scripts', array( $this, 'localize_scripts' ) );
+			add_action( 'wp_ajax_nhb_icon_search', array( $this, 'search_icon' ) );
+			add_filter( 'nhb_localize_scripts', array( $this, 'localize_scripts' ) );
 			add_action( 'wp_footer', array( $this, 'add_builder_templates' ) );
 		}
 
@@ -613,14 +613,14 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 				return $content;
 			}
 
-			if ( ! get_post_meta( $post->ID, 'pbs_icons' ) ) {
+			if ( ! get_post_meta( $post->ID, 'nhb_icons' ) ) {
 				return $content;
 			}
 
-			$icon_html = wp_kses( get_post_meta( $post->ID, 'pbs_icons', true ), self::$allowed_svg_tags );
-			$icon_html = str_replace( '<svg', '<svg style="display: none" id="pbs-icons-' . esc_attr( $post->ID ) . '"', $icon_html );
+			$icon_html = wp_kses( get_post_meta( $post->ID, 'nhb_icons', true ), self::$allowed_svg_tags );
+			$icon_html = str_replace( '<svg', '<svg style="display: none" id="nhb-icons-' . esc_attr( $post->ID ) . '"', $icon_html );
 
-			return apply_filters( 'pbs_prepend_icon_data', $icon_html . $content );
+			return apply_filters( 'nhb_prepend_icon_data', $icon_html . $content );
 		}
 
 
@@ -641,7 +641,7 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 			}
 			$init['extended_valid_elements'] .= 'svg[*],use[*],' . $this->allowed_svg_tags_tinymce;
 
-		    return apply_filters( 'pbs_allow_svgs_in_tinymce', $init );
+		    return apply_filters( 'nhb_allow_svgs_in_tinymce', $init );
 		}
 
 
@@ -651,10 +651,10 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 		 * @since 2.9
 		 */
 		public function add_builder_templates() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
-			include inc . 'page_builder_sandwich/templates/frame-icon-picker.php';
+			include inc . 'no_hassle_builder/templates/frame-icon-picker.php';
 		}
 
 
@@ -671,15 +671,15 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 
 			// Used for grouping icons.
 			$params['icon_groups'] = array(
-				__( 'Uploaded Icons', PAGE_BUILDER_SANDWICH ) => '^0 ',
-				sprintf( __( '%sCinema Icons%s by %sIcons8%s', PAGE_BUILDER_SANDWICH ), '<a href="https://icons8.com/web-app/category/Cinema" target="_blank">', '</a>', '<a href="https://icons8.com/" target="_blank">', '</a>' ) => '^cinema ',
-				sprintf( __( '%sDashicons%s', PAGE_BUILDER_SANDWICH ), '<a href="https://developer.wordpress.org/resource/dashicons/" target="_blank">', '</a>' ) => '^dashicons ',
-				sprintf( __( '%sFont Awesome%s', PAGE_BUILDER_SANDWICH ), '<a href="https://fortawesome.github.io/Font-Awesome/" target="_blank">', '</a>' ) => '^font awesome ',
-				sprintf( __( '%sGenericons%s by %sAutomattic%s', PAGE_BUILDER_SANDWICH ), '<a href="http://genericons.com/" target="_blank">', '</a>', '<a href="https://automattic.com/" target="_blank">', '</a>' ) => '^genericons ',
-				sprintf( __( '%sKameleon%s by %sWebalys - Get more icons%s', PAGE_BUILDER_SANDWICH ), '<a href="https://getdpd.com/cart/hoplink/20951?referrer=213bgg49o90gog" target="_blank">', '</a>', '<a href="https://getdpd.com/cart/hoplink/20951?referrer=213bgg49o90gog" target="_blank">', '</a>' ) => '^kameleon ',
-				sprintf( __( '%sNucleo%s by %sNucleoApp - Get more icons%s', PAGE_BUILDER_SANDWICH ), '<a href="https://nucleoapp.com/?ref=bfintal" target="_blank">', '</a>', '<a href="https://nucleoapp.com/?ref=bfintal" target="_blank">', '</a>' ) => '^nucleo ',
-				sprintf( __( '%sStreamline%s by %sWebalys - Get more icons%s', PAGE_BUILDER_SANDWICH ), '<a href="https://getdpd.com/cart/hoplink/12244?referrer=213bgg49o90gog" target="_blank">', '</a>', '<a href="https://getdpd.com/cart/hoplink/12244?referrer=213bgg49o90gog" target="_blank">', '</a>' ) => '^streamline ',
-				sprintf( __( 'Icons by %sTaras Shypka%s', PAGE_BUILDER_SANDWICH ), '<a href="https://dribbble.com/Bugsster" target="_blank">', '</a>' ) => '^taras shypka ',
+				__( 'Uploaded Icons', NO_HASSLE_BUILDER ) => '^0 ',
+				sprintf( __( '%sCinema Icons%s by %sIcons8%s', NO_HASSLE_BUILDER ), '<a href="https://icons8.com/web-app/category/Cinema" target="_blank">', '</a>', '<a href="https://icons8.com/" target="_blank">', '</a>' ) => '^cinema ',
+				sprintf( __( '%sDashicons%s', NO_HASSLE_BUILDER ), '<a href="https://developer.wordpress.org/resource/dashicons/" target="_blank">', '</a>' ) => '^dashicons ',
+				sprintf( __( '%sFont Awesome%s', NO_HASSLE_BUILDER ), '<a href="https://fortawesome.github.io/Font-Awesome/" target="_blank">', '</a>' ) => '^font awesome ',
+				sprintf( __( '%sGenericons%s by %sAutomattic%s', NO_HASSLE_BUILDER ), '<a href="http://genericons.com/" target="_blank">', '</a>', '<a href="https://automattic.com/" target="_blank">', '</a>' ) => '^genericons ',
+				sprintf( __( '%sKameleon%s by %sWebalys - Get more icons%s', NO_HASSLE_BUILDER ), '<a href="https://getdpd.com/cart/hoplink/20951?referrer=213bgg49o90gog" target="_blank">', '</a>', '<a href="https://getdpd.com/cart/hoplink/20951?referrer=213bgg49o90gog" target="_blank">', '</a>' ) => '^kameleon ',
+				sprintf( __( '%sNucleo%s by %sNucleoApp - Get more icons%s', NO_HASSLE_BUILDER ), '<a href="https://nucleoapp.com/?ref=bfintal" target="_blank">', '</a>', '<a href="https://nucleoapp.com/?ref=bfintal" target="_blank">', '</a>' ) => '^nucleo ',
+				sprintf( __( '%sStreamline%s by %sWebalys - Get more icons%s', NO_HASSLE_BUILDER ), '<a href="https://getdpd.com/cart/hoplink/12244?referrer=213bgg49o90gog" target="_blank">', '</a>', '<a href="https://getdpd.com/cart/hoplink/12244?referrer=213bgg49o90gog" target="_blank">', '</a>' ) => '^streamline ',
+				sprintf( __( 'Icons by %sTaras Shypka%s', NO_HASSLE_BUILDER ), '<a href="https://dribbble.com/Bugsster" target="_blank">', '</a>' ) => '^taras shypka ',
 			);
 			return $params;
 		}
@@ -695,7 +695,7 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 				die();
 			}
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var: okay.
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 			if ( empty( $_POST['s'] ) ) { // Input var: okay.
@@ -704,13 +704,13 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 			$s = strtolower( trim( sanitize_text_field( wp_unslash( $_POST['s'] ) ) ) ); // Input var: okay.
 
 			include 'class-icons-helper.php';
-			$all_icons = pbs_icons();
+			$all_icons = nhb_icons();
 
 			$keys = preg_grep( '|' . preg_quote( $s ) . '|', array_keys( $all_icons ) );
 			$matched_icons = array_slice( array_intersect_key( $all_icons, array_flip( $keys ) ), 0, 500 );
 
 			// Check if we have a match in the saved SVGs.
-			$saved_svg_data = get_option( 'pbs_uploaded_svg' );
+			$saved_svg_data = get_option( 'nhb_uploaded_svg' );
 			if ( ! empty( $saved_svg_data ) ) {
 				if ( is_serialized( $saved_svg_data ) ) {
 					$saved_svg_data = unserialize( $saved_svg_data );
@@ -725,7 +725,7 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 			}
 
 			ksort( $matched_icons );
-			$matched_icons = apply_filters( 'pbs_search_icon', $matched_icons );
+			$matched_icons = apply_filters( 'nhb_search_icon', $matched_icons );
 
 			echo wp_json_encode( $matched_icons );
 			die();
@@ -733,4 +733,4 @@ if ( ! class_exists( 'PBSIcons' ) ) {
 	}
 }
 
-new PBSIcons();
+new nhbIcons();

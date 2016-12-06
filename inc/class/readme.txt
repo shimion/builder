@@ -1,4 +1,4 @@
-=== Page Builder Sandwich - Front-End Drag and Drop Page Builder  ===
+=== No Hassle Builder - Front-End Drag and Drop Page Builder  ===
 Contributors: bfintal, gambitph, freemius
 Donate link: https://pagebuildersandwich.com
 Tags: page builder, page builder plugin, builder, layout builder, page, landing page builder, home page builder, landing page builder, page layout, drag and drop builder, frontend editor, visual, frontend builder, front-end builder, site builder, drag and drop, editor, column, columns, shortcode mapping, website builder, website builder plugin
@@ -14,17 +14,17 @@ A revolutionary frontend drag & drop page builder. Create pages effortlessly & w
 
 [vimeo https://vimeo.com/160196365]
 
-Page Builder Sandwich is quite possibly the the last page builder you'll ever need. With its front-end drag and drop capabilities, Page Builder Sandwich allows you to create and design your site the way your visitors see it. Get access to numerous features such as shortcode mapping, hassle-free and pop up-less editing, and more. With us, you're sure to have a page building experience like no other.
+No Hassle Builder is quite possibly the the last page builder you'll ever need. With its front-end drag and drop capabilities, No Hassle Builder allows you to create and design your site the way your visitors see it. Get access to numerous features such as shortcode mapping, hassle-free and pop up-less editing, and more. With us, you're sure to have a page building experience like no other.
 
 > [Live Demo](http://demo.pagebuildersandwich.com/?utm_source=wordpress.org&utm_medium=description&utm_campaign=Demo) | [Main Website](https://pagebuildersandwich.com/?utm_source=wordpress.org&utm_medium=description&utm_campaign=Page%20Builder%20Sandwich) | [Lite vs. Premium](https://pagebuildersandwich.com/compare?utm_source=wordpress.org&utm_medium=description&utm_campaign=Page%20Builder%20Sandwich)
 
 = Okay.. What's Unique? =
 
-Most of the time, page builders make you go through a lot of popups just to edit a simple thing. For example, if you want to edit a heading, you'll have to open up a popup, type in a text field, then save and close the popup. With Page Builder Sandwich, it's super easy, just click on your content and start typing. It's so much faster and feels more natural.
+Most of the time, page builders make you go through a lot of popups just to edit a simple thing. For example, if you want to edit a heading, you'll have to open up a popup, type in a text field, then save and close the popup. With No Hassle Builder, it's super easy, just click on your content and start typing. It's so much faster and feels more natural.
 
 = Global Shortcode Mapping =
 
-Other page builders let you map out the different attributes of the shortcodes that you have. Page Builder Sandwich on the other hand, does things in a global scale. We have hundreds of plugins listed in our shortcode mapping database. Shortcodes from popular plugins in the WordPress plugin directory will be mapped out right away, complete with attribute descriptions to boot. Easily create and edit shortcodes from NextGEN Gallery, JetPack, ACF, WooCommerce, Shortcodes Ultimate, bbPress, and hundreds more. This feature is unique to Page Builder Sandwich.
+Other page builders let you map out the different attributes of the shortcodes that you have. No Hassle Builder on the other hand, does things in a global scale. We have hundreds of plugins listed in our shortcode mapping database. Shortcodes from popular plugins in the WordPress plugin directory will be mapped out right away, complete with attribute descriptions to boot. Easily create and edit shortcodes from NextGEN Gallery, JetPack, ACF, WooCommerce, Shortcodes Ultimate, bbPress, and hundreds more. This feature is unique to No Hassle Builder.
 
 = No Coding Knowledge Necessary =
 
@@ -32,7 +32,7 @@ Until now, an ordinary person would need a professional developer to build a bea
 
 = Ease of Use =
 
-Using Page Builder Sandwich is unbelievably easy, fast and unlike anything you've used before:
+Using No Hassle Builder is unbelievably easy, fast and unlike anything you've used before:
 
 * Click on text and headings and start typing right away
 * Type in shortcodes directly to add them, or pick them from a list
@@ -57,14 +57,14 @@ We include as little scripts and styles as possible to your site to ensure that 
 
 = Use With Your Current Set Up =
 
-We have successfully used Page Builder Sandwich with a lot of themes including themes from the WordPress.org theme repository, Genesis Themes, StudioPress Themes, Elegant Themes and themes from ThemeForest. If it doesn't work with your theme, please let us know and will fix it.
+We have successfully used No Hassle Builder with a lot of themes including themes from the WordPress.org theme repository, Genesis Themes, StudioPress Themes, Elegant Themes and themes from ThemeForest. If it doesn't work with your theme, please let us know and will fix it.
 
 = Works With Your Existing Content =
 
-Page Builder Sandwich integrates with how WordPress deals with content, so it should work well with your existing pages. Your content should be editable right away in the frontend.
+No Hassle Builder integrates with how WordPress deals with content, so it should work well with your existing pages. Your content should be editable right away in the frontend.
 
 > <strong>Premium Version Available</strong><br>
-> This Lite version contains a lot of features, if you need more features like buttons, carousels and pre-designed sections, these are available along with awesome customer support in [Page Builder Sandwich Premium](https://pagebuildersandwich.com/compare?utm_source=wordpress.org&utm_medium=description&utm_campaign=Page%20Builder%20Sandwich).
+> This Lite version contains a lot of features, if you need more features like buttons, carousels and pre-designed sections, these are available along with awesome customer support in [No Hassle Builder Premium](https://pagebuildersandwich.com/compare?utm_source=wordpress.org&utm_medium=description&utm_campaign=Page%20Builder%20Sandwich).
 
 = Translations Supported =
 
@@ -73,8 +73,8 @@ Page Builder Sandwich integrates with how WordPress deals with content, so it sh
 * German (Germany de_DE) - Thanks to Sascha Theel
 * Spanish (Spain es_ES) - Thanks to Alex Lp
 
-> <strong>Help Translate Page Builder Sandwich Into Your Language</strong><br>
-> Help translate to your language! Login into WordPress.org, then just click on the [Translate this plugin button](https://translate.wordpress.org/projects/wp-plugins/page-builder-sandwich) on the sidebar to begin translating.
+> <strong>Help Translate No Hassle Builder Into Your Language</strong><br>
+> Help translate to your language! Login into WordPress.org, then just click on the [Translate this plugin button](https://translate.wordpress.org/projects/wp-plugins/no-hassle-builder) on the sidebar to begin translating.
 
 = What's in the Premium Version? =
 
@@ -98,13 +98,13 @@ The premium version gives you some awesome [features](https://pagebuildersandwic
 2. Search for "Sandwich"
 3. Install & activate the plugin
 4. Visit any post or page in your frontend
-5. Click the "Edit with Page Builder Sandwich" button on the top of the page and start building your page!
+5. Click the "Edit with No Hassle Builder" button on the top of the page and start building your page!
 
-If you cannot see the "Edit with Page Builder Sandwich" button on your frontend, please check our [docs for more information about this issue](http://docs.pagebuildersandwich.com/article/14-the-edit-with-page-builder-sandwich-button-doesnt-appear).
+If you cannot see the "Edit with No Hassle Builder" button on your frontend, please check our [docs for more information about this issue](http://docs.pagebuildersandwich.com/article/14-the-edit-with-no-hassle-builder-button-doesnt-appear).
 
 == Screenshots ==
 
-1. The frontend Page Builder Sandwich intuitive interface
+1. The frontend No Hassle Builder intuitive interface
 2. Live editing & formatting capabilities
 3. Live editing & rendered shortcode output
 4. Content is still editable in the backend
@@ -112,11 +112,11 @@ If you cannot see the "Edit with Page Builder Sandwich" button on your frontend,
 == Frequently Asked Questions ==
 
 Visit our website [pagebuildersandwich.com](https://pagebuildersandwich.com/?utm_source=wordpress.org&utm_medium=faq&utm_campaign=Page%20Builder%20Sandwich
-) for FAQs and to learn more information about Page Builder Sandwich.
+) for FAQs and to learn more information about No Hassle Builder.
 
-View our [Documentation](http://docs.pagebuildersandwich.com) page for help and to learn more about how to use Page Builder Sandwich
+View our [Documentation](http://docs.pagebuildersandwich.com) page for help and to learn more about how to use No Hassle Builder
 
-If you cannot see the "Edit with Page Builder Sandwich" button on your frontend, please check our [docs for more information about this issue](http://docs.pagebuildersandwich.com/article/14-the-edit-with-page-builder-sandwich-button-doesnt-appear).
+If you cannot see the "Edit with No Hassle Builder" button on your frontend, please check our [docs for more information about this issue](http://docs.pagebuildersandwich.com/article/14-the-edit-with-no-hassle-builder-button-doesnt-appear).
 
 == Upgrade Notice ==
 
@@ -134,7 +134,7 @@ Watch this video for a tour of the new interface:
 
 = Upgrading from 1.x =
 
-The new Page Builder Sandwich is completely different from the old one. We've ditched the old backend page builder for the more awesome frontend page building experience. If you're upgrading from version 1.x, a migration notice should appear on the top of your admin which should help you migrate your content into the new system.
+The new No Hassle Builder is completely different from the old one. We've ditched the old backend page builder for the more awesome frontend page building experience. If you're upgrading from version 1.x, a migration notice should appear on the top of your admin which should help you migrate your content into the new system.
 
 == Changelog ==
 
@@ -160,11 +160,11 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * New: Welcome admin page
 * New: Markdown support (Premium)
 * New: Typing lorem then hitting enter or tab places a placeholder "lorem ipsum" paragraph.
-* Enhanced: The "Edit with Page Builder Sandwich" button now just reads "Page Builder Sandwich" and is no longer color blue to blend with the admin menu.
+* Enhanced: The "Edit with No Hassle Builder" button now just reads "No Hassle Builder" and is no longer color blue to blend with the admin menu.
 * Enhanced: Better "Learn More About Premium" area.
 * Change: Rating ask favor note, now asks after 5 hours of editing or 5 edited pages.
 * Change: Rating ask now uses heartbeat API instead of using normal ajax.
-* Change: Removed PBS opt-in form for stats tracking.
+* Change: Removed nhb opt-in form for stats tracking.
 * Change: Removed deactivation question (switched to Freemius).
 * Change: Completely removed Hopscotch script that wasn't used anymore.
 * Fixed: HTML elements now only have mouse events disabled during editing.
@@ -185,19 +185,19 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * New: Added new options for tab and tab content background, text colors and border colors (Premium)
 * New: Custom classes and custom IDs can now be added to all elements (Premium)
 * New: Added 44 Animations that can be assigned to any element (Premium)
-* New: Appending "#pbs-edit" on the end of a frontend URL will automatically trigger PBS to start editing.
+* New: Appending "#nhb-edit" on the end of a frontend URL will automatically trigger nhb to start editing.
 * New: Added options for the Text element (Premium)
 * New: Added move button on a text toolbar.
 * New: Added post locking when editing & post lock take over.
 * New: Added autosaving every 15 minutes & when editing then another user took over.
 * New: Added check for when you got logged out in WordPress and now displays a login modal form similar to how the backend does it.
-* New: Now checks and updates the PBS nonce when it becomes invalid.
-* New: Added Edit with Page Builder Sandwich links to the post list screen for viewable posts.
+* New: Now checks and updates the nhb nonce when it becomes invalid.
+* New: Added Edit with No Hassle Builder links to the post list screen for viewable posts.
 * Enhanced: Faster mouse events when hovering over items.
 * Enhanced: Row & column toolbars now collapse so as not to overlap each other. Hovering over one will show the buttons.
 * Enhanced: Images added with the pre-designed sections now show the replace & edit buttons.
 * Enhanced: Overlay outlines now update regularly on transitions.
-* Enhanced: Unified all PBS nonces to a single one.
+* Enhanced: Unified all nhb nonces to a single one.
 * Change: No longer adds unique classes and IDs to rows and columns.
 * Change: Column toolbars now have a different color to differentiate them better against row toolbars.
 * Change: Updated premium feature list in lite version.
@@ -293,7 +293,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 = 2.18 =
 * New: Shortcode Mapping with so far 435 mapped shortcodes from 144 plugins
 * Enhanced: In line with WordPress 4.6 updates, we're now using the same system font stack as WordPress to make loading faster.
-* Enhanced: Now hides PBS' widget & sidebar shortcodes from the shortcode picker list.
+* Enhanced: Now hides nhb' widget & sidebar shortcodes from the shortcode picker list.
 * Enhanced: Added a delay before rendering shortcodes to prevent early renders that miss attribute changes.
 * Enhanced: Added a label on a map element's toolbar.
 * Fixed: Deleting an element now updates the inspector properly and doesn't leave the old inspector contents behind.
@@ -324,7 +324,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * Fixed: Hitting the return key doesn't work when at the end of preformatted text areas.
 * Fixed: Hitting the tab key while inside preformatted text will now add a tab.
 * Fixed: File permission errors that result in "Please Wait..." messages
-* Fixed: Edge bug where PBS did not start at all and was stuck in "Please Wait".
+* Fixed: Edge bug where nhb did not start at all and was stuck in "Please Wait".
 * Fixed: Invisible characters (e.g. in preformatted text) stops the down/right button from working properly.
 * Fixed: Clicking above or below the content will now properly create an empty paragraph when a carousel or other similar elements are on the start/end.
 * Fixed: Set the highlighting time of the entire editor area to 999999 to prevent it from showing up.
@@ -373,7 +373,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 
 = 2.15.1 =
 * New: Total count of pre-designed sections are now 40! (premium)
-* Fixed: Some plugins with widgets that are a bit unique (e.g. type hinting constructors) will not cause errors anymore, but they won't show up in PBS. e.g. IMPress for IDX Broker
+* Fixed: Some plugins with widgets that are a bit unique (e.g. type hinting constructors) will not cause errors anymore, but they won't show up in nhb. e.g. IMPress for IDX Broker
 * Fixed: Columns always added a unique class to itself.
 * Fixed: Selecting a similar element will incorrectly make its properties area in the inspector hidden overflow
 * Fixed: The undo, redo, save drop down, help and tips buttons are now hidden during saving.
@@ -439,7 +439,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * Fixed: Fixed: Icons get 100% width when floated in Firefox
 * Fixed: Possible conflict with simple_html_dom class
 * Fixed: Activation doesn't work in some server setups.
-* Fixed: Tip area in the adminbar opens up the first time you use PBS
+* Fixed: Tip area in the adminbar opens up the first time you use nhb
 
 = 2.12 =
 * New: Sidebar element
@@ -451,7 +451,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * Enhancement: Column width is now disabled if there is only 1 column
 * Change: Added H1 & removed H6
 * Fixed: Buttons styling so that they won't get line breaks inside.
-* Fixed: White screen of death when NextGen is turned on. Weird because PBS just triggered NextGen to output an error message, but there are no actual errors encountered.
+* Fixed: White screen of death when NextGen is turned on. Weird because nhb just triggered NextGen to output an error message, but there are no actual errors encountered.
 * Fixed: Rendered empty shortcodes now indicate that they're empty and are now clickable / editable.
 * Fixed: Now hides screen reader text (e.g. modal close button text)
 
@@ -509,7 +509,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 
 = 2.9.1 =
 * Fixed: Error that happens sometimes when blurring a text element when inside a column
-* Fixed: Suppress JS errors when PBS fails to load
+* Fixed: Suppress JS errors when nhb fails to load
 * Fixed: Inspector properties display in the wrong order.
 * Fixed: Dragging an element then clicking once on it incorrectly triggers a double click.
 
@@ -520,11 +520,11 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * New: More button options are now available (premium)
 * New: SVG files can now be uploaded and used as icons (premium)
 * New: Now throws an error if the plugin is activated while the Lite version is active.
-* New: Added filter `pbs_is_editable_by_user` to prevent PBS from showing up
+* New: Added filter `nhb_is_editable_by_user` to prevent nhb from showing up
 * Enhancement: Better editing experience for buttons (premium)
 * Change: Moved line-height into text formatting
 * Change: Margin-top is now first in line than margin-bottom
-* Fixed: Prevent PBS buttons in the admin bar from showing up right when editing starts
+* Fixed: Prevent nhb buttons in the admin bar from showing up right when editing starts
 * Fixed: Now prevents repetitive conflict alerts in the frontend
 * Fixed: Text domain didn't match plugin slug
 * Fixed: Focusing on an empty paragraph then focusing on an input field brings back the focus.
@@ -534,7 +534,7 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * Fixed: Incorrectly enqueued Glide in Lite
 
 = 2.8.4 =
-* Enhancement: Added a sidebar meta box with a note or button to open PBS.
+* Enhancement: Added a sidebar meta box with a note or button to open nhb.
 * Enhancement: Moved undo/redo buttons on the admin bar
 * Change: Removed the 'Frontend' tab in the backend editor.
 * Change: Removed the 'Action' section in the inspector and moved the trash tool into text formatting for easy access
@@ -547,14 +547,14 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 = 2.8.3 =
 * Enhancement: After saving while in a preview, the page redirects to the permalink so that users will always see the saved content even after doing a refresh.
 * New: Added notice when the adminbar is hidden.
-* Fixed: Added assurance that non-main loops did not get PBS wrappers
+* Fixed: Added assurance that non-main loops did not get nhb wrappers
 * Fixed: Error notice won't appear anymore when editing in the Customizer.
-* Fixed: Some PBS stuff show up in non-single pages
+* Fixed: Some nhb stuff show up in non-single pages
 * Fixed: The first line of text in the content isn't included in the editor.
 * Fixed: Sometimes, clicking outside an empty paragraph stops you from clicking and typing in it again.
 
 = 2.8.2 =
-* New: Users are now alerted if there is a Javascript error that may prevent PBS from working
+* New: Users are now alerted if there is a Javascript error that may prevent nhb from working
 * New: Asks for rating for lite users after 1/2/3 hours of active usage.
 * Change: Moved help to the right to prevent showing it accidentally on starting the editor
 * Enhancement: For plugins/themes that forcibly override the_content output, we now have a fallback to support those.
@@ -643,9 +643,9 @@ The new Page Builder Sandwich is completely different from the old one. We've di
 * Fixed compatibility with Jetpack's Markdown module
 * Fixed some shortcuts not working in Firefox
 
-= The New Page Builder Sandwich 2.4 =
+= The New No Hassle Builder 2.4 =
 
-Page Builder Sandwich has been re-built from the ground up into a frontend page builder!
+No Hassle Builder has been re-built from the ground up into a frontend page builder!
 
 = 1.1.1 =
 

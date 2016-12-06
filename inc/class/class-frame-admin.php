@@ -2,18 +2,18 @@
 /**
  * Frame admin class.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSFrameAdmin' ) ) {
+if ( ! class_exists( 'nhbFrameAdmin' ) ) {
 
 	/**
 	 * This is where the admin gets modified for iframe use.
 	 */
-	class PBSFrameAdmin {
+	class nhbFrameAdmin {
 
 
 		/**
@@ -30,15 +30,15 @@ if ( ! class_exists( 'PBSFrameAdmin' ) ) {
 		public function add_iframe_script() {
 
 			// Sidebar admin toggler.
-			?><div id="pbs-admin-menu-toggler"></div><?php
+			?><div id="nhb-admin-menu-toggler"></div><?php
 
 			// Sidebar toggle overlay.
-			?><div id="pbs-admin-menu-toggler-overlay"></div><?php
+			?><div id="nhb-admin-menu-toggler-overlay"></div><?php
 
 			?>
 			<script>
 			// Make sure we're inside an iframe.
-			if ( sessionStorage.getItem( 'pbs_in_admin_iframe' ) && window.location !== window.parent.location ) {
+			if ( sessionStorage.getItem( 'nhb_in_admin_iframe' ) && window.location !== window.parent.location ) {
 
 				// Remove NextGEN's script because it causes errors.
 				window.Frame_Event_Publisher = {
@@ -49,7 +49,7 @@ if ( ! class_exists( 'PBSFrameAdmin' ) ) {
 				// into the modal window.
 				if ( document.querySelector('h1') ) {
 					if ( document.querySelector('h1').childNodes ) {
-						window.parent.document.querySelector( '.pbs-admin-modal .media-frame-title h1' ).innerHTML = document.querySelector('h1').childNodes[0].textContent;
+						window.parent.document.querySelector( '.nhb-admin-modal .media-frame-title h1' ).innerHTML = document.querySelector('h1').childNodes[0].textContent;
 						document.querySelector('h1').childNodes[0].textContent = '';
 					}
 				}
@@ -58,10 +58,10 @@ if ( ! class_exists( 'PBSFrameAdmin' ) ) {
 				jQuery( document ).ready( function( $ ) {
 
 					// Identify that we are in an iframe.
-					document.body.classList.add( 'pbs-admin-in-frame' );
+					document.body.classList.add( 'nhb-admin-in-frame' );
 
-					$( '#pbs-admin-menu-toggler, #pbs-admin-menu-toggler-overlay' ).click( function() {
-						$( 'body' ).toggleClass( 'pbs-show-admin-menu' );
+					$( '#nhb-admin-menu-toggler, #nhb-admin-menu-toggler-overlay' ).click( function() {
+						$( 'body' ).toggleClass( 'nhb-show-admin-menu' );
 					} );
 				} );
 			}
@@ -71,4 +71,4 @@ if ( ! class_exists( 'PBSFrameAdmin' ) ) {
 	}
 }
 
-new PBSFrameAdmin();
+new nhbFrameAdmin();

@@ -3,26 +3,26 @@
  * Inspector class. The inspector performs some ajax calls, those are
  * handled in this class.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSInspector' ) ) {
+if ( ! class_exists( 'nhbInspector' ) ) {
 
 	/**
 	 * This is where all the inspector ajax functionality happens.
 	 */
-	class PBSInspector {
+	class nhbInspector {
 
 
 		/**
 		 * Hook into WordPress.
 		 */
 		function __construct() {
-			add_action( 'wp_ajax_pbs_inspector_dropdown_post', array( $this, 'dropdown_post' ) );
-			add_action( 'wp_ajax_pbs_inspector_dropdown_db', array( $this, 'dropdown_db' ) );
+			add_action( 'wp_ajax_nhb_inspector_dropdown_post', array( $this, 'dropdown_post' ) );
+			add_action( 'wp_ajax_nhb_inspector_dropdown_db', array( $this, 'dropdown_db' ) );
 		}
 
 
@@ -38,7 +38,7 @@ if ( ! class_exists( 'PBSInspector' ) ) {
 				die();
 			}
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var: okay.
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 			if ( empty( $_POST['post_type'] ) ) { // Input var: okay.
@@ -60,7 +60,7 @@ if ( ! class_exists( 'PBSInspector' ) ) {
 			$posts = get_posts( $args );
 
 			$ret = array(
-				'' => '— ' . esc_html__( 'Select one', PAGE_BUILDER_SANDWICH ) . ' —',
+				'' => '— ' . esc_html__( 'Select one', NO_HASSLE_BUILDER ) . ' —',
 			);
 			foreach ( $posts as $post ) {
 				$title = $post->post_title;
@@ -72,7 +72,7 @@ if ( ! class_exists( 'PBSInspector' ) ) {
 			}
 
 			if ( 1 === count( $ret ) ) {
-				$ret[''] = '— ' . sprintf( esc_html__( 'Create a %s first', PAGE_BUILDER_SANDWICH ), ucwords( preg_replace( '/[_-]/', ' ', $post_type ) ) ) . ' —';
+				$ret[''] = '— ' . sprintf( esc_html__( 'Create a %s first', NO_HASSLE_BUILDER ), ucwords( preg_replace( '/[_-]/', ' ', $post_type ) ) ) . ' —';
 			}
 
 			echo wp_json_encode( $ret );
@@ -92,7 +92,7 @@ if ( ! class_exists( 'PBSInspector' ) ) {
 				die();
 			}
 			$nonce = sanitize_key( $_POST['nonce'] ); // Input var: okay.
-			if ( ! wp_verify_nonce( $nonce, 'pbs' ) ) {
+			if ( ! wp_verify_nonce( $nonce, 'nhb' ) ) {
 				die();
 			}
 
@@ -142,7 +142,7 @@ if ( ! class_exists( 'PBSInspector' ) ) {
 
 			// Prepare the results.
 			$ret = array(
-				'' => '— ' . esc_html__( 'Select one', PAGE_BUILDER_SANDWICH ) . ' —',
+				'' => '— ' . esc_html__( 'Select one', NO_HASSLE_BUILDER ) . ' —',
 			);
 
 			if ( $results ) {
@@ -161,4 +161,4 @@ if ( ! class_exists( 'PBSInspector' ) ) {
 	}
 }
 
-new PBSInspector();
+new nhbInspector();

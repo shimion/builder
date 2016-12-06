@@ -2,18 +2,18 @@
 /**
  * Quick access docs for the frontend.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSHelpScout' ) ) {
+if ( ! class_exists( 'nhbHelpScout' ) ) {
 
 	/**
 	 * This is where all the docs functionality happens.
 	 */
-	class PBSHelpScout {
+	class nhbHelpScout {
 
 		/**
 		 * Hook into the frontend.
@@ -29,7 +29,7 @@ if ( ! class_exists( 'PBSHelpScout' ) ) {
 		 * @see script.js
 		 */
 		public function add_helpscout_beacon() {
-			if ( ! PageBuilderSandwich::is_editable_by_user() ) {
+			if ( ! NoHassleBuilder::is_editable_by_user() ) {
 				return;
 			}
 			?>
@@ -44,4 +44,4 @@ if ( ! class_exists( 'PBSHelpScout' ) ) {
 	}
 }
 
-new PBSHelpScout();
+new nhbHelpScout();

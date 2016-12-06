@@ -1,23 +1,23 @@
 <?php
 /**
- * Migrate content written using the OLD PBS to the new PBS.
+ * Migrate content written using the OLD nhb to the new nhb.
  * This is mostly columns using the old method.
  *
- * @package Page Builder Sandwich
+ * @package No Hassle Builder
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
-if ( ! class_exists( 'PBSMigration' ) ) {
+if ( ! class_exists( 'nhbMigration' ) ) {
 
 	/**
 	 * This is where all the migration functionality happens.
 	 */
-	class PBSMigration {
+	class nhbMigration {
 
 		/**
-		 * The number of pages found to have OLD PBS content.
+		 * The number of pages found to have OLD nhb content.
 		 *
 		 * @var	int
 		 */
@@ -29,7 +29,7 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 		 */
 		function __construct() {
 			add_action( 'admin_init', array( $this, 'check_old_version' ) );
-			add_action( 'wp_ajax_pbs_migrate', array( $this, 'ajax_do_migrate' ) );
+			add_action( 'wp_ajax_nhb_migrate', array( $this, 'ajax_do_migrate' ) );
 		}
 
 
@@ -37,17 +37,17 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 		 * Decides whether we should display a migration notice.
 		 */
 		public function check_old_version() {
-			if ( get_option( 'pbs_no_migration_notice' ) ) {
+			if ( get_option( 'nhb_no_migration_notice' ) ) {
 				return;
 			}
 			global $wpdb;
 
-			$count = $wpdb->get_var( "SELECT count(*) FROM $wpdb->posts WHERE post_type != 'revision' AND post_content LIKE '%<table%pbsandwich_column%'" ); // Db call ok; no-cache ok.
+			$count = $wpdb->get_var( "SELECT count(*) FROM $wpdb->posts WHERE post_type != 'revision' AND post_content LIKE '%<table%nhbandwich_column%'" ); // Db call ok; no-cache ok.
 			$count = (int) $count;
 			$this->page_count = $count;
 
 			if ( ! $count ) {
-				update_option( 'pbs_no_migration_notice', 'none' );
+				update_option( 'nhb_no_migration_notice', 'none' );
 				return;
 			}
 
@@ -72,18 +72,18 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 		 */
 		public function show_migration_notice() {
 			?>
-			<div class="update-nag notice pbs-migration-notice">
-				<h4><?php esc_html_e( 'Page Builder Sandwich Important Update Notice', PAGE_BUILDER_SANDWICH ) ?></h4>
+			<div class="update-nag notice nhb-migration-notice">
+				<h4><?php esc_html_e( 'No Hassle Builder Important Update Notice', NO_HASSLE_BUILDER ) ?></h4>
 			    <p>
-					<?php esc_html_e( 'Page Builder Sandwich has been completely re-written and is now <strong>a frontend page builder</strong>! Your content will need to be migrated to the new system for it to work correctly.', PAGE_BUILDER_SANDWICH ) ?>
+					<?php esc_html_e( 'No Hassle Builder has been completely re-written and is now <strong>a frontend page builder</strong>! Your content will need to be migrated to the new system for it to work correctly.', NO_HASSLE_BUILDER ) ?>
 					<em><?php
 						printf(
-							esc_html__( 'This migration process will adjust the old column structure into the new one on %d affected post(s)/page(s). Make sure to back up your site data first before proceeding.', PAGE_BUILDER_SANDWICH ),
+							esc_html__( 'This migration process will adjust the old column structure into the new one on %d affected post(s)/page(s). Make sure to back up your site data first before proceeding.', NO_HASSLE_BUILDER ),
 							absint( $this->page_count )
 						);
 					?></em>
 					<br><br>
-					<a class="button"><?php esc_html_e( 'Start the migration process', PAGE_BUILDER_SANDWICH ) ?></a>
+					<a class="button"><?php esc_html_e( 'Start the migration process', NO_HASSLE_BUILDER ) ?></a>
 				</p>
 			</div>
 			<?php
@@ -96,16 +96,16 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 		 * @see	admin_head
 		 */
 		public function add_migration_script() {
-			$nonce = wp_create_nonce( 'pbs' );
+			$nonce = wp_create_nonce( 'nhb' );
 			?>
 			<script>
-			jQuery(document).on( 'click', '.pbs-migration-notice .button', function() {
+			jQuery(document).on( 'click', '.nhb-migration-notice .button', function() {
 				/* globals alert */
 
-				wp.ajax.send( 'pbs_migrate', {
+				wp.ajax.send( 'nhb_migrate', {
 					success: function(data) {
 						alert( data.success + ' posts/pages succussfully migrated!' );
-						document.querySelector('.pbs-migration-notice').remove();
+						document.querySelector('.nhb-migration-notice').remove();
 					},
 				    error: function(data) {
 						alert( data.failed + ' out of ' + ( data.failed + data.success ) + ' posts/pages could not be migrated.' );
@@ -128,7 +128,7 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 			if ( empty( $_POST['nonce'] ) ) { // Input var okay.
 				wp_send_json_error();
 			}
-			if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'pbs' ) ) { // Input var okay.
+			if ( ! wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'nhb' ) ) { // Input var okay.
 				wp_send_json_error();
 			}
 
@@ -138,10 +138,10 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 
 		/**
 		 * Performs the actual migration. This just updates the contents of posts that are found
-		 * to have OLD PBS columns and converts them to the newer syntax.
+		 * to have OLD nhb columns and converts them to the newer syntax.
 		 */
 		public function migrate() {
-			if ( get_option( 'pbs_no_migration_notice' ) ) {
+			if ( get_option( 'nhb_no_migration_notice' ) ) {
 				return;
 			}
 
@@ -149,13 +149,13 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 			$success = 0;
 			$failed = 0;
 
-			$rows = $wpdb->get_results( "SELECT * FROM $wpdb->posts WHERE post_type != 'revision' AND post_content LIKE '%<table%pbsandwich_column%'" ); // Db call ok; no-cache ok.
+			$rows = $wpdb->get_results( "SELECT * FROM $wpdb->posts WHERE post_type != 'revision' AND post_content LIKE '%<table%nhbandwich_column%'" ); // Db call ok; no-cache ok.
 			if ( ! $rows ) {
 				return;
 			}
 
 			if ( ! class_exists( 'simple_html_dom' ) ) {
-				require_once( 'page_builder_sandwich/inc/simple_html_dom.php' );
+				require_once( 'no_hassle_builder/inc/simple_html_dom.php' );
 			}
 
 			foreach ( $rows as $post ) {
@@ -166,7 +166,7 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 
 				// Replace OLD column system.
 				$html->load( $content, false, false );
-				$old_rows = $html->find( 'table.pbsandwich_column' );
+				$old_rows = $html->find( 'table.nhbandwich_column' );
 				foreach ( $old_rows as $old_row ) {
 					$old_columns = $old_row->find( 'tr', 0 )->children();
 					$new_columns = '';
@@ -176,13 +176,13 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 							$content = '<p>' . $content . '</p>';
 						}
 						$content = preg_replace( "/\r?\n\r?\n\r?/", '</p><p>', $content );
-						$new_columns .= '<div class="pbs-col">' . $content . '</div>';
+						$new_columns .= '<div class="nhb-col">' . $content . '</div>';
 					}
-					$old_row->outertext = '<div class="pbs-row">' . $new_columns . '</div>';
+					$old_row->outertext = '<div class="nhb-row">' . $new_columns . '</div>';
 				}
 				$content = (string) $html;
 
-				// Remove stray ui-sortable classes that the OLD PBS used.
+				// Remove stray ui-sortable classes that the OLD nhb used.
 				$html->load( $content, false, false );
 				$stray_ui_handles = $html->find( '[class*="ui-sortable"]' );
 				foreach ( $stray_ui_handles as $stray_ui_handle ) {
@@ -195,8 +195,8 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 				}
 				$content = (string) $html;
 
-				// Replace OLD PBS_BUTTON shortcodes.
-				$content = preg_replace_callback( '/\[pbs_button[^\]]*\]/', array( $this, 'convert_pbs_button_to_link' ), $content );
+				// Replace OLD nhb_BUTTON shortcodes.
+				$content = preg_replace_callback( '/\[nhb_button[^\]]*\]/', array( $this, 'convert_nhb_button_to_link' ), $content );
 
 				// Update the content.
 				$post_id = wp_update_post( array(
@@ -219,7 +219,7 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 			} else {
 
 				// Hide the migration notice!
-				update_option( 'pbs_no_migration_notice', 'none' );
+				update_option( 'nhb_no_migration_notice', 'none' );
 
 				wp_send_json_success( array(
 					'success' => $success,
@@ -230,16 +230,16 @@ if ( ! class_exists( 'PBSMigration' ) ) {
 
 
 		/**
-		 * Converts a [pbs_button] shortcode found by preg_replace_callback
+		 * Converts a [nhb_button] shortcode found by preg_replace_callback
 		 * into the new non-shortcode format.
 		 *
 		 * @param array $match The matches found by preg_replace_callback.
 		 */
-		public function convert_pbs_button_to_link( $match ) {
+		public function convert_nhb_button_to_link( $match ) {
 			$shortcode = $match[0];
 			$atts = shortcode_parse_atts( $shortcode );
 
-			return sprintf( '<p%s><a href="%s" class="pbs-button"%s>%s</a></p>',
+			return sprintf( '<p%s><a href="%s" class="nhb-button"%s>%s</a></p>',
 				! empty( $atts['align'] ) ? ' style="text-align: ' . esc_attr( $atts['align'] ) . '"' : '',
 				! empty( $atts['url'] ) ? esc_url( $atts['url'] ) : '',
 				! empty( $atts['target'] ) && 'true' === $atts['target'] ? ' target="_blank"' : '',
