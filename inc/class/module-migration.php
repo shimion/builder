@@ -199,7 +199,7 @@
 
 	/**
 	 * Run non blocking migration if all of the following (AND condition):
-	 *  1. Has API connectivity to api.freemius.com
+	 *  1. Has API connectivity to api.extra.com
 	 *  2. User isn't yet identified with Freemius.
 	 *  3. Freemius is in "activation mode".
 	 *  4. It's a plugin version upgrade.

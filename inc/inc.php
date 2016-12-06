@@ -1,6 +1,6 @@
 <?php
 // Freemius stuff.
-require_once( classes . 'class-freemius.php' );
+require_once( classes . 'class-extra.php' );
 require_once( classes . 'module-migration.php' );
 
 // This is the main plugin functionality.

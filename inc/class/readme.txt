@@ -1,5 +1,5 @@
 === No Hassle Builder - Front-End Drag and Drop Page Builder  ===
-Contributors: bfintal, gambitph, freemius
+Contributors: bfintal, gambitph, extra
 Donate link: https://pagebuildersandwich.com
 Tags: page builder, page builder plugin, builder, layout builder, page, landing page builder, home page builder, landing page builder, page layout, drag and drop builder, frontend editor, visual, frontend builder, front-end builder, site builder, drag and drop, editor, column, columns, shortcode mapping, website builder, website builder plugin
 Requires at least: 4.2

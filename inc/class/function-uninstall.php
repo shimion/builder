@@ -47,7 +47,7 @@ if ( ! function_exists( 'nhb_uninstall' ) ) {
 		delete_option( 'nhb_shortcode_mapped_plugins_total' );
 		delete_option( 'nhb_shortcode_mapped_shortcodes_total' );
 
-		// Used by class-freemius.php.
+		// Used by class-extra.php.
 		delete_option( 'nhb_premium_notice' );
 
 		// Used by class-ask-rating.php.
