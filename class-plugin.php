@@ -18,12 +18,6 @@ SKU: PBS
  */
 
 
-define('NBD', plugin_dir_path( __FILE__ ));
-
-define('inc', NBD . 'inc/');
-define('classes', inc . 'class/');
-
-
 if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly.
 }
 
@@ -67,8 +61,43 @@ if ( ! function_exists( 'pbs_is_dev' ) ) {
 		return false;
 	}
 }
+
+// Freemius stuff.
+require_once( 'class-freemius.php' );
+require_once( 'module-migration.php' );
+
+// This is the main plugin functionality.
+require_once( 'class-compatibility.php' );
+require_once( 'class-render-shortcode.php' );
+require_once( 'class-page-builder-sandwich.php' );
+require_once( 'class-migration.php' );
+require_once( 'class-intro.php' );
+require_once( 'class-meta-box.php' );
+require_once( 'class-icons.php' );
+require_once( 'class-helpscout.php' );
+require_once( 'class-stats-tracking.php' );
+require_once( 'class-shortcodes.php' );
+require_once( 'class-element-widget.php' );
+require_once( 'class-element-sidebar.php' );
+require_once( 'class-element-html.php' );
+require_once( 'class-element-map.php' );
+require_once( 'class-translations.php' );
+require_once( 'class-shortcode-mapper.php' );
+require_once( 'class-shortcode-mapper-3rd-party.php' );
+require_once( 'class-inspector.php' );
+require_once( 'class-frame-admin.php' );
+require_once( 'class-heartbeat.php' );
+require_once( 'class-ask-rating.php' );
+require_once( 'class-admin-welcome.php' );
+require_once( 'class-title.php' );
+
 global $pbs_fs;
-include_once(inc.'inc.php');
+if ( ! PBS_IS_LITE && $pbs_fs->can_use_premium_code() ) {
+	require_once( 'class-icons-uploader.php' );
+	require_once( 'class-element-newsletter.php' );
+	require_once( 'class-element-carousel.php' );
+	require_once( 'class-element-pretext.php' );
+}
 
 // Initializes plugin class.
 if ( ! class_exists( 'PageBuilderSandwichPlugin' ) ) {

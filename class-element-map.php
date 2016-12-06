@@ -79,7 +79,7 @@ if ( ! class_exists( 'PBSElementMap' ) ) {
 			$google_map_url .= '&language=' . $language;
 
 			// Enqueue the scripts.
-			wp_enqueue_script( 'pbs-element-map', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/frontend-map' . $js_suffix . '.js', dirname(__FILE__) ), array(), VERSION_PAGE_BUILDER_SANDWICH, true );
+			wp_enqueue_script( 'pbs-element-map', plugins_url( 'page_builder_sandwich/js/' . $js_dir . '/frontend-map' . $js_suffix . '.js', __FILE__ ), array(), VERSION_PAGE_BUILDER_SANDWICH, true );
 			wp_enqueue_script( 'pbs-element-map-lib', $google_map_url, array( 'pbs-element-map' ), VERSION_PAGE_BUILDER_SANDWICH, true );
 		}
 
